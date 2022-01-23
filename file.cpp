@@ -1,5 +1,8 @@
 #include "file.h"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
 std::string readFileToString(const char* filePath)
 {
     std::stringstream sStream;
@@ -23,4 +26,15 @@ std::string readFileToString(const char* filePath)
     }
 
     return result;
+}
+
+unsigned char* loadImage(const char* filePath, int* width, int* height, int* nrChannels)
+{
+    stbi_set_flip_vertically_on_load(true);
+    return stbi_load(filePath, width, height, nrChannels, 0);
+}
+
+void freeImageData(unsigned char* data)
+{
+    stbi_image_free(data);
 }

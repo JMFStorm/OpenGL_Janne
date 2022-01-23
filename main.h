@@ -14,3 +14,4 @@
 
 #include "shader.h"
 #include "file.h"
+#include "texture.h"
