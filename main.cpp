@@ -21,7 +21,7 @@ int main()
 
     glfwSetErrorCallback(glfwErrorCallback);
 
-    GLFWwindow* window = glfwCreateWindow(1920, 1080, "LearnOpenGL_2D!", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(1600, 1200, "LearnOpenGL!", NULL, NULL);
 
     if (window == NULL)
     {
@@ -50,11 +50,11 @@ int main()
     unsigned int shaderProgram = createShaderProgram("./vertex_shader.shader", "./fragment_shader.shader");
     
     float vertices[] = {
-        // positions          // colors           // texture coords
-         0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
-         0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
-        -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
-        -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left 
+        // positions        // texture coords
+         0.5f,  0.5f, 0.0f, 1.0f, 1.0f, // top right
+         0.5f, -0.5f, 0.0f, 1.0f, 0.0f, // bottom right
+        -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, // bottom left
+        -0.5f,  0.5f, 0.0f, 0.0f, 1.0f  // top left 
     };
 
     unsigned int indices[] = {  
@@ -77,21 +77,16 @@ int main()
 
     // Position attribute
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-
-    // Color attribute
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
 
     // Texture attribute
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
 
     unsigned int texture = loadTexture("./textures/container.jpg");
 
     glUseProgram(shaderProgram);
     glUniform1i(glGetUniformLocation(shaderProgram, "texture1"), 0);
-    glUniform1i(glGetUniformLocation(shaderProgram, "texture2"), 1);
 
     while (!glfwWindowShouldClose(window))
     {
@@ -102,18 +97,17 @@ int main()
             glfwSetWindowShouldClose(window, true);
         }
 
+        glm::mat4 trans = glm::mat4(1.0f);
+        trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
+        trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
+
+        unsigned int transformLoc = glGetUniformLocation(shaderProgram, "transform");
+        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         glUseProgram(shaderProgram);
-
-        float timeValue = glfwGetTime();
-        float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
-        float redValue = (sin(timeValue * 0.5f) / 2.0f) + 0.5f;
-        float blueValue = (sin(timeValue * 2.0f) / 2.0f) + 0.5f;
-
-        int vertexColorLocation = glGetUniformLocation(shaderProgram, "changingColor");
-        glUniform4f(vertexColorLocation, redValue, greenValue, blueValue, 1.0f);
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture);
