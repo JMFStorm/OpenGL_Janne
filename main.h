@@ -19,3 +19,6 @@
 #include "shader.h"
 #include "file.h"
 #include "texture.h"
+
+#include <ft2build.h>
+#include FT_FREETYPE_H 

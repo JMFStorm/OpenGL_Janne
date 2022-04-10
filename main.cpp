@@ -46,6 +46,15 @@ int main()
     glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
     printf("Maximum nr of vertex attributes supported: %d\n",  nrAttributes);
 
+    // Load fonts
+
+    FT_Library ft;
+    if (FT_Init_FreeType(&ft))
+    {
+        std::cout << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
+        return -1;
+    }
+
     // Load shader program
     unsigned int shaderProgram = createShaderProgram("./vertex_shader.shader", "./fragment_shader.shader");
     
@@ -88,6 +97,9 @@ int main()
     glUseProgram(shaderProgram);
     glUniform1i(glGetUniformLocation(shaderProgram, "texture1"), 0);
 
+    glm::mat4 trans;
+    unsigned int transformLoc;
+
     while (!glfwWindowShouldClose(window))
     {
         glfwPollEvents();
@@ -97,11 +109,11 @@ int main()
             glfwSetWindowShouldClose(window, true);
         }
 
-        glm::mat4 trans = glm::mat4(1.0f);
+        trans = glm::mat4(1.0f);
         trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
         trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
 
-        unsigned int transformLoc = glGetUniformLocation(shaderProgram, "transform");
+        transformLoc = glGetUniformLocation(shaderProgram, "transform");
         glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
