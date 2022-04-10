@@ -1623,6 +1623,8 @@
     </None>
     <None Include="vertex_shader.shader" />
     <None Include="fragment_shader.shader" />
+    <None Include="font_vertex_shader.shader" />
+    <None Include="font_fragment_shader.shader" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="lib\glfw3.lib" />
