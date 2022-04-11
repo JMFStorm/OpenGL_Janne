@@ -1,8 +1,10 @@
 #include "texture.h"
 
-unsigned int loadTexture(const char* filePath)
+unsigned int loadTexture(const char* filePath, bool isGL_RGBA)
 {
     unsigned int texture;
+
+    int rbgMode = isGL_RGBA ? GL_RGBA : GL_RGB;
 
     glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_2D, texture);
@@ -18,7 +20,7 @@ unsigned int loadTexture(const char* filePath)
 
     if (data)
     {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, rbgMode, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
     }
     else

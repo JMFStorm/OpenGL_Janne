@@ -14,8 +14,6 @@ int loadCharacters(const char* fontPath, std::map<char, Character>* characters);
 // Main program start
 int main()
 {
-    unsigned int VBO, VBO2, VAO, VAO2, EBO;
-
     if (glfwInit() == GLFW_FALSE)
     {
         printf("glfwInit() failed\n");
@@ -54,7 +52,6 @@ int main()
     printf("Maximum nr of vertex attributes supported: %d\n",  nrAttributes);
 
     // Load fonts
-
     std::map<char, Character> characters;
 
     if (loadCharacters("fonts/arial.ttf", &characters) != 0)
@@ -80,6 +77,8 @@ int main()
         3, 0, 1   
     };
 
+    unsigned int VBO, VAO, EBO;
+
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);
@@ -99,12 +98,14 @@ int main()
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
-    unsigned int texture = loadTexture("./textures/container.jpg");
+    unsigned int texture1 = loadTexture("./textures/container.jpg", false);
+    unsigned int texture2 = loadTexture("./textures/awesomeface.png", true);
 
     glUseProgram(shaderProgram);
     glUniform1i(glGetUniformLocation(shaderProgram, "texture1"), 0);
+    glUniform1i(glGetUniformLocation(shaderProgram, "texture2"), 1);
 
-    glm::mat4 trans;
+    glm::mat4 trans, trans2;
     unsigned int transformLoc;
 
     while (!glfwWindowShouldClose(window))
@@ -129,9 +130,18 @@ int main()
         glUseProgram(shaderProgram);
 
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture);
+        glBindTexture(GL_TEXTURE_2D, texture1);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, texture2);
 
         glBindVertexArray(VAO);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+        trans2 = glm::mat4(1.0f);
+        trans2 = glm::translate(trans2, glm::vec3(-0.5f, 0.5f, 0.0f));
+        trans2 = glm::rotate(trans2, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, -1.0f));
+
+        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans2));
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         glfwSwapBuffers(window);
