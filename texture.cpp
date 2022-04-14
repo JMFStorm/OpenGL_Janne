@@ -25,7 +25,7 @@ unsigned int loadTexture(const char* filePath, bool isGL_RGBA)
     }
     else
     {
-        printf("Failed to load texture\n");
+        printf("Failed to load texture: %s\n", filePath);
     }
 
     freeImageData(data);
