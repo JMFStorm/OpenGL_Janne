@@ -7,12 +7,17 @@ struct Character {
     unsigned int Advance;    // Offset to advance to next glyph
 };
 
+GLFWwindow* getWindow(int width, int height);
+void loadOpenGlContext();
+
+void jAssert(bool assertion, std::string errorMessage);
+
 void glfwErrorCallback(int errorCode, const char* description);
 void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 
-int loadCharacters(const char* fontPath, std::map<char, Character>* characters);
+std::map<char, Character>* loadCharacters(const char* fontPath);
 
 // camera
 glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
@@ -32,73 +37,21 @@ int main()
     float deltaTime = 0.0f;	// Time between current frame and last frame
     float lastFrame = 0.0f; // Time of last frame
 
-    if (glfwInit() == GLFW_FALSE)
-    {
-        printf("glfwInit() failed\n");
-        return -1;
-    }
+    jAssert(glfwInit() == GLFW_TRUE, "glfwInit() failed");
 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    // Create window
+    GLFWwindow* window = getWindow(1600, 1200);
 
-    glfwSetErrorCallback(glfwErrorCallback);
+    // Load GLAD context
+    loadOpenGlContext();
 
-    GLFWwindow* window = glfwCreateWindow(1600, 1200, "LearnOpenGL!", NULL, NULL);
-
-    if (window == NULL)
-    {
-        printf("glfwCreateWindow() failed\n");
-        glfwTerminate();
-        return -1;
-    }
-
-    glfwMakeContextCurrent(window);
-    glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
-    glfwSetCursorPosCallback(window, mouse_callback);
-    glfwSetScrollCallback(window, scroll_callback);
-
-    // tell GLFW to capture our mouse
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
-    // Load all OpenGL functions using the glfw loader function
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-    {
-        printf("Failed to initialize OpenGL context GLAD\n");
-        return -1;
-    }
-
-    printf("Using OpenGL %d.%d\n", GLVersion.major, GLVersion.minor);
-
-    int nrAttributes;
-    glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
-    printf("Maximum nr of vertex attributes supported: %d\n",  nrAttributes);
-
-    // Load fonts
-    std::map<char, Character> characters;
-
-    if (loadCharacters("fonts/arial.ttf", &characters) != 0)
-    {
-        std::cout << "Failed to load Glyph characters" << std::endl;
-        return -1;
-    }
+    // Load text fonts
+    std::map<char, Character>* characters = loadCharacters("fonts/arial.ttf");
 
     glEnable(GL_DEPTH_TEST);
 
     // Load shader program
-
     unsigned int shaderProgram = createShaderProgram("./vertex_shader.shader", "./fragment_shader.shader");
-    
-    /*
-    * For vertex buffer object
-    float vertices[] = {
-        // positions        // texture coords
-         0.5f,  0.5f, 0.0f, 1.0f, 1.0f, // top right
-         0.5f, -0.5f, 0.0f, 1.0f, 0.0f, // bottom right
-        -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, // bottom left
-        -0.5f,  0.5f, 0.0f, 0.0f, 1.0f  // top left 
-    };
-    */
 
     // For element buffer array
     unsigned int indices[] = {
@@ -301,21 +254,23 @@ void framebufferSizeCallback(GLFWwindow* window, int width, int height)
     glViewport(0, 0, width, height);
 }
 
-int loadCharacters(const char* fontPath, std::map<char, Character>* characters)
+std::map<char, Character>* loadCharacters(const char* fontPath)
 {
     FT_Library ft;
     FT_Face face;
 
+    std::map<char, Character> characters;
+
     if (FT_Init_FreeType(&ft))
     {
         std::cout << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
-        return -1;
+        throw "ERROR::FREETYPE: Could not init FreeType Library";
     }
 
     if (FT_New_Face(ft, "fonts/arial.ttf", 0, &face))
     {
         std::cout << "ERROR::FREETYPE: Failed to load font" << std::endl;
-        return -1;
+        throw "ERROR::FREETYPE: Failed to load font";
     }
 
     FT_Set_Pixel_Sizes(face, 0, 48);
@@ -323,7 +278,7 @@ int loadCharacters(const char* fontPath, std::map<char, Character>* characters)
     if (FT_Load_Char(face, 'X', FT_LOAD_RENDER))
     {
         std::cout << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;
-        return -1;
+        throw "ERROR::FREETYTPE: Failed to load Glyph";
     }
 
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // disable byte-alignment restriction
@@ -369,7 +324,7 @@ int loadCharacters(const char* fontPath, std::map<char, Character>* characters)
             face->glyph->advance.x
         };
 
-        characters->insert(std::pair<char, Character>(c, character));
+        characters.insert(std::pair<char, Character>(c, character));
     }
 
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -377,7 +332,7 @@ int loadCharacters(const char* fontPath, std::map<char, Character>* characters)
     FT_Done_Face(face);
     FT_Done_FreeType(ft);
 
-    return 0;
+    return &characters;
 }
 
 // glfw: whenever the mouse moves, this callback is called
@@ -439,4 +394,51 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
     {
         fov = 45.0f;
     }
+}
+
+GLFWwindow* getWindow(int width, int height)
+{
+    GLFWwindow* window = glfwCreateWindow(width, height, "LearnOpenGL!", NULL, NULL);
+
+    jAssert(window != NULL, "glfwCreateWindow() failed");
+
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+    glfwSetErrorCallback(glfwErrorCallback);
+
+    glfwMakeContextCurrent(window);
+    glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
+    glfwSetCursorPosCallback(window, mouse_callback);
+    glfwSetScrollCallback(window, scroll_callback);
+
+    // tell GLFW to capture our mouse
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+    return window;
+}
+
+void jAssert(bool assertion, std::string errorMessage)
+{
+    if (assertion == false)
+    {
+        std::string text = errorMessage;
+        std::cout << text << std::endl;
+        abort();
+    }
+}
+
+void loadOpenGlContext()
+{
+    // Load all OpenGL functions using the glfw loader function
+    int loaded = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+
+    jAssert(loaded == 1, "Failed to initialize OpenGL context GLAD");
+
+    int nrAttributes;
+    glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
+
+    printf("Using OpenGL %d.%d\n", GLVersion.major, GLVersion.minor);
+    printf("Maximum nr of vertex attributes supported: %d\n", nrAttributes);
 }
