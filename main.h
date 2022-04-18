@@ -17,6 +17,7 @@
 
 #pragma warning(pop)
 
+#include "sprite.h"
 #include "shader.h"
 #include "file.h"
 #include "texture.h"

@@ -558,6 +558,7 @@
     <ClInclude Include="include\KHR\khrplatform.h" />
     <ClInclude Include="jUtil.h" />
     <ClInclude Include="shader.h" />
+    <ClInclude Include="sprite.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="texture.h" />
   </ItemGroup>
@@ -700,8 +701,8 @@
     <None Include="include\glm\gtx\vector_angle.inl" />
     <None Include="include\glm\gtx\vector_query.inl" />
     <None Include="include\glm\gtx\wrap.inl" />
-    <None Include="shaders\fragment_shader.shader" />
-    <None Include="shaders\vertex_shader.shader" />
+    <None Include="shaders\default_fragment_shader.shader" />
+    <None Include="shaders\default_vertex_shader.shader" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="lib\glfw3.lib" />

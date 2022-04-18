@@ -14,6 +14,10 @@ public:
     std::string Name;
     std::string FilePath;
 
+    Texture()
+    {
+    }
+
     Texture(const std::string &name)
     {
         Name = name;

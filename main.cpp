@@ -7,7 +7,7 @@ struct Character {
     unsigned int Advance;    // Offset to advance to next glyph
 };
 
-GLFWwindow* getWindow(int width, int height);
+GLFWwindow* GetWindow(int width, int height);
 
 void loadOpenGlContext();
 
@@ -27,7 +27,7 @@ int main()
     jAssert(glfwInit() == GLFW_TRUE, "glfwInit() failed");
 
     // Create window
-    GLFWwindow* window = getWindow(1600, 1200);
+    GLFWwindow* window = GetWindow(1600, 1200);
 
     // Load GLAD context
     loadOpenGlContext();
@@ -35,63 +35,22 @@ int main()
     // Load text fonts
     std::map<char, Character>* characters = loadCharacters("fonts/arial.ttf");
 
-    // Load shader program
-    Shader* myShader = new Shader("Dafult Shader");
-    myShader->VertexFilePath = "./shaders/vertex_shader.shader";
-    myShader->FragmentFilePath = "./shaders/fragment_shader.shader";
-    myShader->Compile();
+    // Load shader1
+    Shader* shader1 = new Shader("My Little Shader");
+    shader1->VertexFilePath = "./shaders/default_vertex_shader.shader";
+    shader1->FragmentFilePath = "./shaders/default_fragment_shader.shader";
+    shader1->Init();
+    shader1->SetInt("texture1", 0);
 
-    // For element buffer array
-    float vertices[] = {
-        // positions         // color           // texture coords
-         0.5f,  0.5f, 0.0f,  1.0f, 1.0f, 1.0f,  1.0f, 1.0f, // top right
-         0.5f, -0.5f, 0.0f,  1.0f, 1.0f, 1.0f,  1.0f, 0.0f, // bottom right
-        -0.5f, -0.5f, 0.0f,  1.0f, 1.0f, 1.0f,  0.0f, 0.0f, // bottom left
-        -0.5f,  0.5f, 0.0f,  1.0f, 1.0f, 1.0f,  0.0f, 1.0f  // top left 
-    };
-
-    // For vertex array object
-    unsigned int indices[] = {
-        0, 1, 3, // first triangle
-        1, 2, 3  // second triangle
-    };
-
-    unsigned int vertexArrayObject;
-    unsigned int vertexBufferObject;
-    unsigned int elementBufferObject;
-
-    glGenVertexArrays(1, &vertexArrayObject);
-    glGenBuffers(1, &vertexBufferObject);
-    glGenBuffers(1, &elementBufferObject);
-
-    glBindVertexArray(vertexArrayObject);
-
-    glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBufferObject);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-    // Position attribute
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-
-    // Color attribute
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-
-    // Texture attribute
-    glEnableVertexAttribArray(2);
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-
+    // Load texture1
     Texture* texture1 = new Texture("Container");
     texture1->FilePath = "./textures/container.jpg";
     texture1->IsRGBA = false;
     texture1->Init();
 
-    // Declare texture slots for shader
-    myShader->Use();
-    myShader->SetInt("texture1", 0);
+    // Create sprite
+    Sprite* mySprite = new Sprite(texture1, shader1);
+    mySprite->Init();
 
     // Camera transform
     glm::mat4 cameraTransform = glm::mat4(1.0f);
@@ -136,19 +95,13 @@ int main()
         }
 
         // Update shader from camera view
-        myShader->SetMat4("camera", cameraTransform);
-        myShader->SetMat4("model", modelTransform);
+        shader1->SetMat4("camera", cameraTransform);
+        shader1->SetMat4("model", modelTransform);
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        myShader->Use();
-
-        glActiveTexture(GL_TEXTURE0);
-        texture1->Bind();
-
-        glBindVertexArray(vertexArrayObject);
-        glDrawElements(GL_TRIANGLES, sizeof(vertices), GL_UNSIGNED_INT, 0);
+        mySprite->Draw();
 
         glfwSwapBuffers(window);
     }
@@ -250,7 +203,7 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
 }
 
-GLFWwindow* getWindow(int width, int height)
+GLFWwindow* GetWindow(int width, int height)
 {
     GLFWwindow* window = glfwCreateWindow(width, height, "LearnOpenGL!", NULL, NULL);
 

@@ -1211,6 +1211,9 @@
     <ClInclude Include="jUtil.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="sprite.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="include\glm\detail\func_common.inl">
@@ -1621,8 +1624,8 @@
     <None Include="include\glm\gtx\wrap.inl">
       <Filter>Header Files</Filter>
     </None>
-    <None Include="shaders\vertex_shader.shader" />
-    <None Include="shaders\fragment_shader.shader" />
+    <None Include="shaders\default_vertex_shader.shader" />
+    <None Include="shaders\default_fragment_shader.shader" />
     <None Include="shaders\font_vertex_shader.shader" />
     <None Include="shaders\font_fragment_shader.shader" />
   </ItemGroup>

@@ -25,7 +25,7 @@ public:
         Name = shaderName;
     }
 
-    unsigned int Compile()
+    unsigned int Init()
     {
         jAssert(VertexFilePath.empty() == false, "VertexFilePath missing, cannot compile " + Name);
         jAssert(FragmentFilePath.empty() == false, "FragmentFilePath missing, cannot compile " + Name);
@@ -37,27 +37,27 @@ public:
         return shaderId;
     }
 
-    void Use()
+    void Use() const
     {
         glUseProgram(Id);
     }
 
-    unsigned int GetUniform(const std::string& name)
+    unsigned int GetUniform(const std::string& name) const
     {
         return glGetUniformLocation(Id, name.c_str());
     }
 
-    void SetBool(const std::string& name, bool value) const
+    void SetBool(const std::string& name, const bool value) const
     {
         glUniform1i(glGetUniformLocation(Id, name.c_str()), (int)value);
     }
 
-    void SetInt(const std::string& name, int value) const
+    void SetInt(const std::string& name, const int value) const
     {
         glUniform1i(glGetUniformLocation(Id, name.c_str()), value);
     }
 
-    void SetFloat(const std::string& name, float value) const
+    void SetFloat(const std::string& name, const float value) const
     {
         glUniform1f(glGetUniformLocation(Id, name.c_str()), value);
     }
@@ -66,7 +66,7 @@ public:
     {
         glUniform2fv(glGetUniformLocation(Id, name.c_str()), 1, &value[0]);
     }
-    void SetVec2(const std::string& name, float x, float y) const
+    void SetVec2(const std::string& name, const float x, const float y) const
     {
         glUniform2f(glGetUniformLocation(Id, name.c_str()), x, y);
     }
