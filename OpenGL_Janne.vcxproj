@@ -163,9 +163,9 @@
     <ClCompile Include="file.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="include\glm\detail\glm.cpp" />
+    <ClCompile Include="jUtil.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="main.h" />
-    <ClCompile Include="shader.cpp" />
     <ClCompile Include="texture.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -557,13 +557,14 @@
     <ClInclude Include="include\glm\vec4.hpp" />
     <ClInclude Include="include\glm\vector_relational.hpp" />
     <ClInclude Include="include\KHR\khrplatform.h" />
+    <ClInclude Include="jUtil.h" />
     <ClInclude Include="shader.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="texture.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="font_fragment_shader.shader" />
-    <None Include="font_vertex_shader.shader" />
+    <None Include="shaders\font_fragment_shader.shader" />
+    <None Include="shaders\font_vertex_shader.shader" />
     <None Include="include\glm\detail\func_common.inl" />
     <None Include="include\glm\detail\func_common_simd.inl" />
     <None Include="include\glm\detail\func_exponential.inl" />
@@ -700,8 +701,8 @@
     <None Include="include\glm\gtx\vector_angle.inl" />
     <None Include="include\glm\gtx\vector_query.inl" />
     <None Include="include\glm\gtx\wrap.inl" />
-    <None Include="fragment_shader.shader" />
-    <None Include="vertex_shader.shader" />
+    <None Include="shaders\fragment_shader.shader" />
+    <None Include="shaders\vertex_shader.shader" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="lib\glfw3.lib" />

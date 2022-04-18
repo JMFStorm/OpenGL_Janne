@@ -20,6 +20,7 @@
 #include "shader.h"
 #include "file.h"
 #include "texture.h"
+#include "jUtil.h"
 
 #include <ft2build.h>
 #include FT_FREETYPE_H 

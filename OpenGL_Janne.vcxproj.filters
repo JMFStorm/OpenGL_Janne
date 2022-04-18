@@ -27,13 +27,13 @@
     <ClCompile Include="main.h">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="shader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="file.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="jUtil.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1211,6 +1211,9 @@
     <ClInclude Include="include\dlg\output.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="jUtil.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="include\glm\detail\func_common.inl">
@@ -1621,10 +1624,10 @@
     <None Include="include\glm\gtx\wrap.inl">
       <Filter>Header Files</Filter>
     </None>
-    <None Include="vertex_shader.shader" />
-    <None Include="fragment_shader.shader" />
-    <None Include="font_vertex_shader.shader" />
-    <None Include="font_fragment_shader.shader" />
+    <None Include="shaders\vertex_shader.shader" />
+    <None Include="shaders\fragment_shader.shader" />
+    <None Include="shaders\font_vertex_shader.shader" />
+    <None Include="shaders\font_fragment_shader.shader" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="lib\glfw3.lib" />

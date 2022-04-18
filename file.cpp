@@ -3,7 +3,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-std::string readFileToString(const char* filePath)
+std::string readFileToString(std::string filePath)
 {
     std::stringstream sStream;
     std::ifstream source;

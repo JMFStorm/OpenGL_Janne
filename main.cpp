@@ -11,8 +11,6 @@ GLFWwindow* getWindow(int width, int height);
 
 void loadOpenGlContext();
 
-void jAssert(bool assertion, std::string errorMessage);
-
 void glfwErrorCallback(int errorCode, const char* description);
 void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -38,15 +36,18 @@ int main()
     std::map<char, Character>* characters = loadCharacters("fonts/arial.ttf");
 
     // Load shader program
-    unsigned int myShader = createShaderProgram("./vertex_shader.shader", "./fragment_shader.shader");
+    Shader* myShader = new Shader("Dafult Shader");
+    myShader->VertexFilePath = "./shaders/vertex_shader.shader";
+    myShader->FragmentFilePath = "./shaders/fragment_shader.shader";
+    myShader->Compile();
 
     // For element buffer array
     float vertices[] = {
-        // positions        // texture coords
-         0.5f,  0.5f, 0.0f, 1.0f, 1.0f, // top right
-         0.5f, -0.5f, 0.0f, 1.0f, 0.0f, // bottom right
-        -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, // bottom left
-        -0.5f,  0.5f, 0.0f, 0.0f, 1.0f  // top left 
+        // positions         // color           // texture coords
+         0.5f,  0.5f, 0.0f,  1.0f, 1.0f, 1.0f,  1.0f, 1.0f, // top right
+         0.5f, -0.5f, 0.0f,  1.0f, 1.0f, 1.0f,  1.0f, 0.0f, // bottom right
+        -0.5f, -0.5f, 0.0f,  1.0f, 1.0f, 1.0f,  0.0f, 0.0f, // bottom left
+        -0.5f,  0.5f, 0.0f,  1.0f, 1.0f, 1.0f,  0.0f, 1.0f  // top left 
     };
 
     // For vertex array object
@@ -73,20 +74,21 @@ int main()
 
     // Position attribute
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+
+    // Color attribute
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
 
     // Texture attribute
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 
     unsigned int texture1 = loadTexture("./textures/container.jpg", false);
-    unsigned int texture2 = loadTexture("./textures/awesomeface.png", true);
-
-    glUseProgram(myShader);
 
     // Declare texture slots for shader
-    glUniform1i(glGetUniformLocation(myShader, "texture1"), 0);
-    glUniform1i(glGetUniformLocation(myShader, "texture2"), 1);
+    myShader->Use();
+    myShader->SetInt("texture1", 0);
 
     // Camera transform
     glm::mat4 cameraTransform = glm::mat4(1.0f);
@@ -112,42 +114,37 @@ int main()
 
         if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) 
         {
-            cameraTransform = glm::translate(cameraTransform, glm::vec3(0.0f, 1.0f, 0.0f) * cameraSpeed);
+            cameraTransform = glm::translate(cameraTransform, glm::vec3(0.0f, -1.0f, 0.0f) * cameraSpeed);
         }
 
         if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) 
         {
-            cameraTransform = glm::translate(cameraTransform, glm::vec3(0.0f, -1.0f, 0.0f) * cameraSpeed);
+            cameraTransform = glm::translate(cameraTransform, glm::vec3(0.0f, 1.0f, 0.0f) * cameraSpeed);
         }
 
         if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
         {
-            cameraTransform = glm::translate(cameraTransform, glm::vec3(-1.0f, 0.0f, 0.0f) * cameraSpeed);
+            cameraTransform = glm::translate(cameraTransform, glm::vec3(1.0f, 0.0f, 0.0f) * cameraSpeed);
         }
 
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         {
-            cameraTransform = glm::translate(cameraTransform, glm::vec3(1.0f, 0.0f, 0.0f) * cameraSpeed);
+            cameraTransform = glm::translate(cameraTransform, glm::vec3(-1.0f, 0.0f, 0.0f) * cameraSpeed);
         }
 
-        unsigned int cameraUniform = glGetUniformLocation(myShader, "camera");
-        glUniformMatrix4fv(cameraUniform, 1, GL_FALSE, glm::value_ptr(cameraTransform));
-
-        unsigned int modelUniform = glGetUniformLocation(myShader, "model");
-        glUniformMatrix4fv(modelUniform, 1, GL_FALSE, glm::value_ptr(modelTransform));
+        // Update shader from camera view
+        myShader->SetMat4("camera", cameraTransform);
+        myShader->SetMat4("model", modelTransform);
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        glUseProgram(myShader);
+        myShader->Use();
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture1);
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, texture2);
 
         glBindVertexArray(vertexArrayObject);
-
         glDrawElements(GL_TRIANGLES, sizeof(vertices), GL_UNSIGNED_INT, 0);
 
         glfwSwapBuffers(window);
@@ -271,16 +268,6 @@ GLFWwindow* getWindow(int width, int height)
     // glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     return window;
-}
-
-void jAssert(bool assertion, std::string errorMessage)
-{
-    if (assertion == false)
-    {
-        std::string text = errorMessage;
-        std::cout << text << std::endl;
-        abort();
-    }
 }
 
 void loadOpenGlContext()
