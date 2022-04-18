@@ -56,8 +56,8 @@ int main()
         1, 2, 3  // second triangle
     };
 
-    unsigned int vertexBufferObject;
     unsigned int vertexArrayObject;
+    unsigned int vertexBufferObject;
     unsigned int elementBufferObject;
 
     glGenVertexArrays(1, &vertexArrayObject);
@@ -84,7 +84,10 @@ int main()
     glEnableVertexAttribArray(2);
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 
-    unsigned int texture1 = loadTexture("./textures/container.jpg", false);
+    Texture* texture1 = new Texture("Container");
+    texture1->FilePath = "./textures/container.jpg";
+    texture1->IsRGBA = false;
+    texture1->Init();
 
     // Declare texture slots for shader
     myShader->Use();
@@ -142,7 +145,7 @@ int main()
         myShader->Use();
 
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture1);
+        texture1->Bind();
 
         glBindVertexArray(vertexArrayObject);
         glDrawElements(GL_TRIANGLES, sizeof(vertices), GL_UNSIGNED_INT, 0);

@@ -106,7 +106,7 @@ public:
     }
 
 private:
-    unsigned int CreateShaderProgram(std::string vertexFilePath, std::string fragmentFilePath)
+    unsigned int CreateShaderProgram(const std::string &vertexFilePath, const std::string &fragmentFilePath) const
     {
         int success;
         char infoLog[512];

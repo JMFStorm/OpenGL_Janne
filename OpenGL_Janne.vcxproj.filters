@@ -30,9 +30,6 @@
     <ClCompile Include="file.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="texture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="jUtil.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
