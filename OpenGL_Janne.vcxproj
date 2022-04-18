@@ -166,6 +166,9 @@
     <ClCompile Include="jUtil.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="main.h" />
+    <ClCompile Include="shader.cpp" />
+    <ClCompile Include="sprite.cpp" />
+    <ClCompile Include="texture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="file.h" />

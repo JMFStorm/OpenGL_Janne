@@ -15,6 +15,9 @@
 #include <sstream>
 #include <map>
 
+#include <ft2build.h>
+#include FT_FREETYPE_H 
+
 #pragma warning(pop)
 
 #include "sprite.h"
@@ -22,6 +25,3 @@
 #include "file.h"
 #include "texture.h"
 #include "jUtil.h"
-
-#include <ft2build.h>
-#include FT_FREETYPE_H 

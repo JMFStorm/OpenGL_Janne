@@ -40,17 +40,15 @@ int main()
     shader1->VertexFilePath = "./shaders/default_vertex_shader.shader";
     shader1->FragmentFilePath = "./shaders/default_fragment_shader.shader";
     shader1->Init();
-    shader1->SetInt("texture1", 0);
 
     // Load texture1
-    Texture* texture1 = new Texture("Container");
-    texture1->FilePath = "./textures/container.jpg";
+    Texture* texture1 = new Texture("./textures/container.jpg");
     texture1->IsRGBA = false;
-    texture1->Init();
+
+    shader1->SetInt("texture1", 0);
 
     // Create sprite
-    Sprite* mySprite = new Sprite(texture1, shader1);
-    mySprite->Init();
+    Sprite* mySprite = new Sprite("Container", texture1, shader1);
 
     // Camera transform
     glm::mat4 cameraTransform = glm::mat4(1.0f);
