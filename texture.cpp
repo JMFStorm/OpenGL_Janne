@@ -1,13 +1,7 @@
 #include "texture.h"
 
-Texture::Texture(const std::string& filePath)
+Texture::Texture()
 {
-    jAssert(filePath.empty() == false, "FilePath missing, cannot intit texture ");
-
-    unsigned int result = LoadTexture(filePath, IsRGBA);
-
-    FilePath = filePath;
-    Id = result;
 }
 
 void Texture::Bind()
@@ -16,11 +10,12 @@ void Texture::Bind()
     glBindTexture(GL_TEXTURE_2D, Id);
 }
 
-unsigned int Texture::LoadTexture(const std::string& filePath, const bool isGL_RGBA) const
+unsigned int Texture::Init()
 {
-    unsigned int textureId;
+    jAssert(FilePath.empty() == false, "FilePath missing, cannot intit texture ");
 
-    int rbgMode = isGL_RGBA ? GL_RGBA : GL_RGB;
+    unsigned int textureId;
+    int rbgMode = IsRGBA ? GL_RGBA : GL_RGB;
 
     glGenTextures(1, &textureId);
     glBindTexture(GL_TEXTURE_2D, textureId);
@@ -32,14 +27,16 @@ unsigned int Texture::LoadTexture(const std::string& filePath, const bool isGL_R
 
     int width, height, nrChannels;
 
-    unsigned char* data = loadImage(filePath.c_str(), &width, &height, &nrChannels);
+    unsigned char* data = loadImage(FilePath.c_str(), &width, &height, &nrChannels);
 
-    jAssert(data, "Failed to load texture: " + filePath);
+    jAssert(data, "Failed to load texture: " + FilePath);
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, rbgMode, GL_UNSIGNED_BYTE, data);
     glGenerateMipmap(GL_TEXTURE_2D);
 
     freeImageData(data);
+
+    Id = textureId;
 
     return textureId;
 }

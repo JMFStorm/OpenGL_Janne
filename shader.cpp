@@ -1,8 +1,8 @@
 #include "shader.h"
 
-Shader::Shader(std::string shaderName)
+Shader::Shader()
 {
-    Name = shaderName;
+    Id = -1;
 }
 
 unsigned int Shader::Init()
@@ -43,6 +43,7 @@ unsigned int Shader::Init()
 
 void Shader::Use() const
 {
+    jAssert(Id != -1, "Id isn't initialized, cannot use shader " + Name);
     glUseProgram(Id);
 }
 

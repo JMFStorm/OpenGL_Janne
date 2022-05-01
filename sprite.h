@@ -9,12 +9,8 @@ class Sprite
 {
 public:
 	std::string Name;
-    std::string FilePath;
-
-	Texture* MyTexture;
+    Texture* MyTexture;
     Shader* MyShader;
-
-    bool IsRGBA = false;
 
     Sprite(const std::string& name, Texture* texture, Shader* shader);
 

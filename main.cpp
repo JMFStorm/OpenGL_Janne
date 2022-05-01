@@ -36,14 +36,17 @@ int main()
     std::map<char, Character>* characters = loadCharacters("fonts/arial.ttf");
 
     // Load shader1
-    Shader* shader1 = new Shader("My Little Shader");
+    Shader* shader1 = new Shader();
+    shader1->Name = "My Little Shader";
     shader1->VertexFilePath = "./shaders/default_vertex_shader.shader";
     shader1->FragmentFilePath = "./shaders/default_fragment_shader.shader";
     shader1->Init();
 
     // Load texture1
-    Texture* texture1 = new Texture("./textures/container.jpg");
+    Texture* texture1 = new Texture();
+    texture1->FilePath = "./textures/container.jpg";
     texture1->IsRGBA = false;
+    texture1->Init();
 
     shader1->SetInt("texture1", 0);
 

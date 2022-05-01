@@ -14,7 +14,7 @@
 class Shader
 {
 public:
-    unsigned int Id;
+    unsigned int Id = -1;
 
     std::string Name;
     std::string VertexFilePath = "";
@@ -22,12 +22,10 @@ public:
 
     glm::vec3 Color = { 1.0f, 1.0f, 1.0f };
 
-    Shader(std::string shaderName);
+    Shader();
 
     unsigned int Init();
-
     void Use() const;
-
     void DrawElements();
 
     unsigned int GetUniform(const std::string& name) const;

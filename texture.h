@@ -9,15 +9,11 @@ class Texture
 {
 public:
     unsigned int Id = 0;
-
     bool IsRGBA = false;
-
     std::string FilePath;
 
-    Texture(const std::string& filePath);
+    Texture();
 
     void Bind();
-
-private:
-    unsigned int LoadTexture(const std::string& filePath, const bool isGL_RGBA) const;
+    unsigned int Init();
 };
