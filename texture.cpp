@@ -1,5 +1,10 @@
 #include "texture.h"
 
+#include <glad/glad.h>
+
+#include "file.h"
+#include "jUtil.h"
+
 Texture::Texture()
 {
 }

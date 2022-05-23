@@ -1,4 +1,5 @@
 #pragma once
+
 #pragma warning(push, 0)
 
 #include <glad/glad.h>
@@ -25,3 +26,5 @@
 #include "file.h"
 #include "texture.h"
 #include "jUtil.h"
+#include "text.h"
+#include "window.h"

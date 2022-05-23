@@ -168,7 +168,9 @@
     <ClCompile Include="main.h" />
     <ClCompile Include="shader.cpp" />
     <ClCompile Include="sprite.cpp" />
+    <ClCompile Include="text.cpp" />
     <ClCompile Include="texture.cpp" />
+    <ClCompile Include="window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="file.h" />
@@ -563,7 +565,9 @@
     <ClInclude Include="shader.h" />
     <ClInclude Include="sprite.h" />
     <ClInclude Include="stb_image.h" />
+    <ClInclude Include="text.h" />
     <ClInclude Include="texture.h" />
+    <ClInclude Include="window.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\font_fragment_shader.shader" />

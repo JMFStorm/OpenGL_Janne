@@ -1,9 +1,6 @@
 #pragma once
 
-#include <glad/glad.h>
-
-#include "file.h"
-#include "jUtil.h"
+#include <string>
 
 class Texture
 {
