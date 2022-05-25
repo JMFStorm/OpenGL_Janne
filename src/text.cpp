@@ -7,9 +7,6 @@
 
 #include <iostream>
 
-#include <ft2build.h>
-#include FT_FREETYPE_H
-
 std::map<char, Character>* loadCharacters(const char* fontPath)
 {
     FT_Library ft;

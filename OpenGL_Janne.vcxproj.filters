@@ -1648,9 +1648,11 @@
     <None Include="shaders\font_fragment_shader.shader" />
     <None Include=".gitignore" />
     <None Include="freetype.dll" />
+    <None Include="lib\glfw3.pdb" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="lib\glfw3.lib" />
+    <Library Include="lib\freetype.lib" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="textures\awesomeface.png">

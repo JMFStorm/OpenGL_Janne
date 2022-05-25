@@ -6,9 +6,6 @@
 
 #include <map>
 
-#include <ft2build.h>
-#include FT_FREETYPE_H 
-
 #pragma warning(pop)
 
 #include "sprite.h"
@@ -26,7 +23,7 @@ int main()
 
     jAssert(glfwInit() == GLFW_TRUE, "glfwInit() failed");
 
-    GLFWwindow* window = GetWindow(1600, 1200);
+    GLFWwindow* window = GetWindow(1800, 1200);
 
     // Load GLAD context
     // Load all OpenGL functions using the glfw loader function
