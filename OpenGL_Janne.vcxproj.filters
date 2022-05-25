@@ -15,42 +15,39 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="glad.c">
+    <ClCompile Include="src\glad.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="include\glm\detail\glm.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="main.h">
+    <ClCompile Include="src\file.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="file.cpp">
+    <ClCompile Include="src\jUtil.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="jUtil.cpp">
+    <ClCompile Include="src\texture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="texture.cpp">
+    <ClCompile Include="src\sprite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="sprite.cpp">
+    <ClCompile Include="src\shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="shader.cpp">
+    <ClCompile Include="src\window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="window.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="text.cpp">
+    <ClCompile Include="src\text.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="stb_image.h">
+    <ClInclude Include="src\stb_image.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\glm\detail\_features.hpp">
@@ -911,13 +908,13 @@
     <ClInclude Include="include\KHR\khrplatform.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="shader.h">
+    <ClInclude Include="src\shader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="file.h">
+    <ClInclude Include="src\file.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="texture.h">
+    <ClInclude Include="src\texture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\freetype\config\ftconfig.h">
@@ -1223,16 +1220,16 @@
     <ClInclude Include="include\dlg\output.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="jUtil.h">
+    <ClInclude Include="src\jUtil.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="sprite.h">
+    <ClInclude Include="src\sprite.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="window.h">
+    <ClInclude Include="src\window.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="text.h">
+    <ClInclude Include="src\text.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1649,6 +1646,8 @@
     <None Include="shaders\default_fragment_shader.shader" />
     <None Include="shaders\font_vertex_shader.shader" />
     <None Include="shaders\font_fragment_shader.shader" />
+    <None Include=".gitignore" />
+    <None Include="freetype.dll" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="lib\glfw3.lib" />

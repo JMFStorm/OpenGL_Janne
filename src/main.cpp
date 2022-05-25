@@ -1,4 +1,22 @@
-#include "main.h"
+#pragma warning(push, 0)
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
+#include <map>
+
+#include <ft2build.h>
+#include FT_FREETYPE_H 
+
+#pragma warning(pop)
+
+#include "sprite.h"
+#include "shader.h"
+#include "texture.h"
+#include "jUtil.h"
+#include "text.h"
+#include "window.h"
 
 // Main program start
 int main()
