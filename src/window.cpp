@@ -1,12 +1,14 @@
-#include "window.h"
+#include <iostream>
+#include <stdio.h>
 
-#include "jUtil.h"
+#include "window.hpp"
+#include "jUtil.hpp"
 
-GLFWwindow* GetWindow(int width, int height)
+Window::Window(int width, int height)
 {
-    GLFWwindow* window = glfwCreateWindow(width, height, "LearnOpenGL!", NULL, NULL);
+    WindowInstance = glfwCreateWindow(width, height, "LearnOpenGL!", NULL, NULL);
 
-    jAssert(window != NULL, "glfwCreateWindow() failed");
+    jAssert(WindowInstance != NULL, "glfwCreateWindow() failed");
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -14,26 +16,31 @@ GLFWwindow* GetWindow(int width, int height)
 
     glfwSetErrorCallback(glfwErrorCallback);
 
-    glfwMakeContextCurrent(window);
-    glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
-    glfwSetCursorPosCallback(window, mouse_callback);
-    glfwSetScrollCallback(window, scroll_callback);
+    glfwMakeContextCurrent(WindowInstance);
+    glfwSetFramebufferSizeCallback(WindowInstance, framebufferSizeCallback);
+    glfwSetCursorPosCallback(WindowInstance, mouseCallback);
+    glfwSetScrollCallback(WindowInstance, scrollCallback);
 
     // tell GLFW to capture our mouse
     // glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-    return window;
+    // Load GLAD context
+    // Load all OpenGL functions using the glfw loader function
+    int loaded = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+    jAssert(loaded == 1, "Failed to initialize OpenGL context GLAD");
+
+    int nrAttributes;
+    glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
+
+    printf("Using OpenGL %d.%d\n", GLVersion.major, GLVersion.minor);
+    printf("Maximum nr of vertex attributes supported: %d\n", nrAttributes);
 }
 
-// glfw: whenever the mouse moves, this callback is called
-// -------------------------------------------------------
-void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
+void mouseCallback(GLFWwindow* window, double xposIn, double yposIn)
 {
 }
 
-// glfw: whenever the mouse scroll wheel scrolls, this callback is called
-// ----------------------------------------------------------------------
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+void scrollCallback(GLFWwindow* window, double xoffset, double yoffset)
 {
 }
 

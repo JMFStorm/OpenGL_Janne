@@ -9,11 +9,11 @@
 #pragma warning(pop)
 
 #include "sprite.h"
-#include "shader.h"
-#include "texture.h"
-#include "jUtil.h"
+#include "shader.hpp"
+#include "texture.hpp"
+#include "jUtil.hpp"
 #include "text.h"
-#include "window.h"
+#include "window.hpp"
 
 // Main program start
 int main()
@@ -23,34 +23,19 @@ int main()
 
     jAssert(glfwInit() == GLFW_TRUE, "glfwInit() failed");
 
-    GLFWwindow* window = GetWindow(1800, 1200);
-
-    // Load GLAD context
-    // Load all OpenGL functions using the glfw loader function
-    int loaded = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-    jAssert(loaded == 1, "Failed to initialize OpenGL context GLAD");
-
-    int nrAttributes;
-    glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
-
-    printf("Using OpenGL %d.%d\n", GLVersion.major, GLVersion.minor);
-    printf("Maximum nr of vertex attributes supported: %d\n", nrAttributes);
+    Window* windowMain = new Window(1800, 1200);
 
     // Load text fonts
     std::map<char, Character>* characters = loadCharacters("fonts/arial.ttf");
 
-    // Load shader1
-    Shader* shader1 = new Shader();
-    shader1->Name = "My Little Shader";
-    shader1->VertexFilePath = "./shaders/default_vertex_shader.shader";
-    shader1->FragmentFilePath = "./shaders/default_fragment_shader.shader";
-    shader1->Init();
-
     // Load texture1
-    Texture* texture1 = new Texture();
-    texture1->FilePath = "./textures/container.jpg";
-    texture1->IsRGBA = false;
-    texture1->Init();
+    Texture* texture1 = new Texture("./textures/container.jpg");
+
+    // Load shader1
+    Shader* shader1 = new Shader(
+        "My Little Shader",
+        "./shaders/default_vertex_shader.shader",
+        "./shaders/default_fragment_shader.shader");
 
     shader1->SetInt("texture1", 0);
 
@@ -63,7 +48,7 @@ int main()
     // My object transform
     glm::mat4 modelTransform = glm::mat4(1.0f);
 
-    while (!glfwWindowShouldClose(window))
+    while (!glfwWindowShouldClose(windowMain->WindowInstance))
     {
         // Calculate deltatime
         float currentFrame = glfwGetTime();
@@ -74,27 +59,27 @@ int main()
 
         glfwPollEvents();
 
-        if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        if (glfwGetKey(windowMain->WindowInstance, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         {
-            glfwSetWindowShouldClose(window, true);
+            glfwSetWindowShouldClose(windowMain->WindowInstance, true);
         }
 
-        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) 
+        if (glfwGetKey(windowMain->WindowInstance, GLFW_KEY_W) == GLFW_PRESS)
         {
             cameraTransform = glm::translate(cameraTransform, glm::vec3(0.0f, -1.0f, 0.0f) * cameraSpeed);
         }
 
-        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) 
+        if (glfwGetKey(windowMain->WindowInstance, GLFW_KEY_S) == GLFW_PRESS)
         {
             cameraTransform = glm::translate(cameraTransform, glm::vec3(0.0f, 1.0f, 0.0f) * cameraSpeed);
         }
 
-        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        if (glfwGetKey(windowMain->WindowInstance, GLFW_KEY_A) == GLFW_PRESS)
         {
             cameraTransform = glm::translate(cameraTransform, glm::vec3(1.0f, 0.0f, 0.0f) * cameraSpeed);
         }
 
-        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        if (glfwGetKey(windowMain->WindowInstance, GLFW_KEY_D) == GLFW_PRESS)
         {
             cameraTransform = glm::translate(cameraTransform, glm::vec3(-1.0f, 0.0f, 0.0f) * cameraSpeed);
         }
@@ -108,7 +93,7 @@ int main()
 
         mySprite->Draw();
 
-        glfwSwapBuffers(window);
+        glfwSwapBuffers(windowMain->WindowInstance);
     }
 
 	return 0;

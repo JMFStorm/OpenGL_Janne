@@ -2,8 +2,8 @@
 
 #include <string>
 
-#include "shader.h"
-#include "texture.h"
+#include "shader.hpp"
+#include "texture.hpp"
 
 class Sprite
 {

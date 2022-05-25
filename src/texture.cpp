@@ -1,22 +1,13 @@
-#include "texture.h"
-
 #include <glad/glad.h>
 
+#include "texture.hpp"
 #include "file.h"
-#include "jUtil.h"
+#include "jUtil.hpp"
 
-Texture::Texture()
+Texture::Texture(std::string filePath)
 {
-}
+    FilePath = filePath;
 
-void Texture::Bind()
-{
-    jAssert(Id != 0, "Id missing, cannot bind texture " + FilePath);
-    glBindTexture(GL_TEXTURE_2D, Id);
-}
-
-unsigned int Texture::Init()
-{
     jAssert(FilePath.empty() == false, "FilePath missing, cannot intit texture ");
 
     unsigned int textureId;
@@ -42,6 +33,10 @@ unsigned int Texture::Init()
     freeImageData(data);
 
     Id = textureId;
+}
 
-    return textureId;
+void Texture::Bind()
+{
+    jAssert(Id != 0, "Id missing, cannot bind texture " + FilePath);
+    glBindTexture(GL_TEXTURE_2D, Id);
 }

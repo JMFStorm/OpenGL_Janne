@@ -9,22 +9,24 @@
 #include <iostream>
 
 #include "file.h"
-#include "jUtil.h"
+#include "jUtil.hpp"
 
 class Shader
 {
 public:
     unsigned int Id = -1;
 
+    glm::vec3 m_Color = { 1.0f, 1.0f, 1.0f };
+
     std::string Name;
-    std::string VertexFilePath = "";
-    std::string FragmentFilePath = "";
+    std::string VertexFilePath;
+    std::string FragmentFilePath;
 
-    glm::vec3 Color = { 1.0f, 1.0f, 1.0f };
+    Shader(
+        std::string Name,
+        std::string VertexFilePath,
+        std::string FragmentFilePath);
 
-    Shader();
-
-    unsigned int Init();
     void Use() const;
     void DrawElements();
 
@@ -68,5 +70,7 @@ private:
         -0.5f, -0.5f, 0.0f,  0.0f, 0.0f  // bottom left
     };
 
-    unsigned int CreateShaderProgram(const std::string& vertexFilePath, const std::string& fragmentFilePath) const;
+    unsigned int CreateShaderProgram(
+        const std::string& vertexFilePath,
+        const std::string& fragmentFilePath) const;
 };

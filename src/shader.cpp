@@ -1,12 +1,14 @@
-#include "shader.h"
+#include "shader.hpp"
 
-Shader::Shader()
+Shader::Shader(
+    std::string name,
+    std::string vertexFilePath,
+    std::string fragmentFilePath)
 {
-    Id = -1;
-}
+    Name = name;
+    VertexFilePath = vertexFilePath;
+    FragmentFilePath = fragmentFilePath;
 
-unsigned int Shader::Init()
-{
     jAssert(VertexFilePath.empty() == false, "VertexFilePath missing, cannot compile " + Name);
     jAssert(FragmentFilePath.empty() == false, "FragmentFilePath missing, cannot compile " + Name);
 
@@ -37,8 +39,6 @@ unsigned int Shader::Init()
     unsigned int shaderId = CreateShaderProgram(VertexFilePath, FragmentFilePath);
 
     Id = shaderId;
-
-    return shaderId;
 }
 
 void Shader::Use() const

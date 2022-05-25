@@ -908,13 +908,13 @@
     <ClInclude Include="include\KHR\khrplatform.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\shader.h">
+    <ClInclude Include="src\shader.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\file.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\texture.h">
+    <ClInclude Include="src\texture.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\freetype\config\ftconfig.h">
@@ -1220,13 +1220,13 @@
     <ClInclude Include="include\dlg\output.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\jUtil.h">
+    <ClInclude Include="src\jUtil.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\sprite.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\window.h">
+    <ClInclude Include="src\window.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\text.h">
