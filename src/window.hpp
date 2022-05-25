@@ -3,16 +3,11 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-class Window
-{
-public:
-	GLFWwindow* WindowInstance;
-
-	Window(int width, int height);
-
-private:
-
-};
+void CreateWindow(int width, int height);
+bool GetWindowShouldClose();
+void HandleInputEvents();
+void ClearWindowBuffer(float red, float green, float blue, float alpha);
+void SwapScreenBuffer();
 
 void mouseCallback(GLFWwindow* window, double xpos, double ypos);
 void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);

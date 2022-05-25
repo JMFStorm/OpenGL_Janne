@@ -160,6 +160,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\application.cpp" />
     <ClCompile Include="src\file.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="include\glm\detail\glm.cpp" />
@@ -172,6 +173,7 @@
     <ClCompile Include="src\window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\application.hpp" />
     <ClInclude Include="src\file.h" />
     <ClInclude Include="include\dlg\dlg.h" />
     <ClInclude Include="include\dlg\output.h" />

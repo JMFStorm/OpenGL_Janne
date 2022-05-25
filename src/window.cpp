@@ -4,11 +4,15 @@
 #include "window.hpp"
 #include "jUtil.hpp"
 
-Window::Window(int width, int height)
-{
-    WindowInstance = glfwCreateWindow(width, height, "LearnOpenGL!", NULL, NULL);
+GLFWwindow* window;
 
-    jAssert(WindowInstance != NULL, "glfwCreateWindow() failed");
+void CreateWindow(int width, int height)
+{
+    jAssert(glfwInit() == GLFW_TRUE, "glfwInit() failed");
+
+    window = glfwCreateWindow(width, height, "LearnOpenGL!", NULL, NULL);
+
+    jAssert(window != NULL, "glfwCreateWindow() failed");
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -16,16 +20,16 @@ Window::Window(int width, int height)
 
     glfwSetErrorCallback(glfwErrorCallback);
 
-    glfwMakeContextCurrent(WindowInstance);
-    glfwSetFramebufferSizeCallback(WindowInstance, framebufferSizeCallback);
-    glfwSetCursorPosCallback(WindowInstance, mouseCallback);
-    glfwSetScrollCallback(WindowInstance, scrollCallback);
+    glfwMakeContextCurrent(window);
+
+    glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
+    glfwSetCursorPosCallback(window, mouseCallback);
+    glfwSetScrollCallback(window, scrollCallback);
 
     // tell GLFW to capture our mouse
     // glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     // Load GLAD context
-    // Load all OpenGL functions using the glfw loader function
     int loaded = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
     jAssert(loaded == 1, "Failed to initialize OpenGL context GLAD");
 
@@ -34,6 +38,52 @@ Window::Window(int width, int height)
 
     printf("Using OpenGL %d.%d\n", GLVersion.major, GLVersion.minor);
     printf("Maximum nr of vertex attributes supported: %d\n", nrAttributes);
+}
+
+bool GetWindowShouldClose()
+{
+    return glfwWindowShouldClose(window);
+}
+
+void HandleInputEvents()
+{
+    glfwPollEvents();
+
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    {
+        glfwSetWindowShouldClose(window, true);
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+    {
+        // cameraTransform = glm::translate(cameraTransform, glm::vec3(0.0f, -1.0f, 0.0f) * cameraSpeed);
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+    {
+        // cameraTransform = glm::translate(cameraTransform, glm::vec3(0.0f, 1.0f, 0.0f) * cameraSpeed);
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+    {
+        // cameraTransform = glm::translate(cameraTransform, glm::vec3(1.0f, 0.0f, 0.0f) * cameraSpeed);
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+    {
+        // cameraTransform = glm::translate(cameraTransform, glm::vec3(-1.0f, 0.0f, 0.0f) * cameraSpeed);
+    }
+}
+
+void ClearWindowBuffer(float red, float green, float blue, float alpha)
+{
+    glClearColor(red, green, blue, alpha);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
+void SwapScreenBuffer()
+{
+    glfwSwapBuffers(window);
 }
 
 void mouseCallback(GLFWwindow* window, double xposIn, double yposIn)

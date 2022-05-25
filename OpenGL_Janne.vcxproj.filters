@@ -45,6 +45,9 @@
     <ClCompile Include="src\text.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\application.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\stb_image.h">
@@ -1230,6 +1233,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\text.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\application.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
