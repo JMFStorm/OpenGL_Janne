@@ -1,4 +1,4 @@
-#include "text.h"
+#include "text.hpp"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -7,7 +7,7 @@
 
 #include <iostream>
 
-std::map<char, Character>* loadCharacters(const char* fontPath)
+std::map<char, Character>* LoadCharacters(const char* fontPath)
 {
     FT_Library ft;
     FT_Face face;
@@ -16,15 +16,15 @@ std::map<char, Character>* loadCharacters(const char* fontPath)
     std::map<char, Character> characters;
 
     result = FT_Init_FreeType(&ft);
-    jAssert(result == 0, "ERROR::FREETYPE: Could not init FreeType Library");
+    JAssert(result == 0, "ERROR::FREETYPE: Could not init FreeType Library");
 
     result = FT_New_Face(ft, "fonts/arial.ttf", 0, &face);
-    jAssert(result == 0, "ERROR::FREETYPE: Failed to load font");
+    JAssert(result == 0, "ERROR::FREETYPE: Failed to load font");
 
     FT_Set_Pixel_Sizes(face, 0, 48);
 
     result = FT_Load_Char(face, 'X', FT_LOAD_RENDER);
-    jAssert(result == 0, "ERROR::FREETYTPE: Failed to load Glyph");
+    JAssert(result == 0, "ERROR::FREETYTPE: Failed to load Glyph");
 
     // disable byte-alignment restriction
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);

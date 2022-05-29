@@ -1226,7 +1226,7 @@
     <ClInclude Include="src\window.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\text.h">
+    <ClInclude Include="src\text.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\application.hpp">
@@ -1655,10 +1655,10 @@
     <Library Include="lib\freetype.lib" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="textures\awesomeface.png">
+    <Image Include="images\awesomeface.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="textures\container.jpg">
+    <Image Include="images\container.jpg">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

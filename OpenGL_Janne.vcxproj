@@ -564,7 +564,7 @@
     <ClInclude Include="src\jUtil.hpp" />
     <ClInclude Include="src\shader.hpp" />
     <ClInclude Include="src\stb_image.h" />
-    <ClInclude Include="src\text.h" />
+    <ClInclude Include="src\text.hpp" />
     <ClInclude Include="src\texture.hpp" />
     <ClInclude Include="src\window.hpp" />
   </ItemGroup>
@@ -718,8 +718,8 @@
     <Library Include="lib\glfw3.lib" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="textures\awesomeface.png" />
-    <Image Include="textures\container.jpg" />
+    <Image Include="images\awesomeface.png" />
+    <Image Include="images\container.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

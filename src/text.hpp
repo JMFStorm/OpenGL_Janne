@@ -14,4 +14,4 @@ struct Character {
     unsigned int Advance;    // Offset to advance to next glyph
 };
 
-std::map<char, Character>* loadCharacters(const char* fontPath);
+std::map<char, Character>* LoadCharacters(const char* fontPath);

@@ -2,8 +2,8 @@
 
 #include <string>
 
-std::string readFileToString(std::string);
+std::string ReadFileToString(std::string);
 
-unsigned char* loadImage(const char* filePath, int* width, int* height, int* nrChannels);
+unsigned char* LoadImage(const char* filePath, int* width, int* height, int* nrChannels);
 
-void freeImageData(unsigned char* data);
+void FreeImageData(unsigned char* data);

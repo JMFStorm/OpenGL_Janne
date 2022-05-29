@@ -2,4 +2,4 @@
 
 #include <string>
 
-void jAssert(bool assertion, std::string errorMessage);
+void JAssert(bool assertion, std::string errorMessage);

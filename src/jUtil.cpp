@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-void jAssert(bool assertion, std::string errorMessage)
+void JAssert(bool assertion, std::string errorMessage)
 {
     if (assertion == false)
     {

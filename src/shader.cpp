@@ -8,8 +8,8 @@ namespace Shader
         char infoLog[512];
 
         // Get shader source strings
-        std::string vertexSourceString = readFileToString(vertexFilePath);
-        std::string fragmentSourceString = readFileToString(fragmentFilePath);
+        std::string vertexSourceString = ReadFileToString(vertexFilePath);
+        std::string fragmentSourceString = ReadFileToString(fragmentFilePath);
 
         const char* vertexSource = vertexSourceString.c_str();
         const char* fragmentSource = fragmentSourceString.c_str();
@@ -69,15 +69,6 @@ void Use(unsigned int shaderId)
 {
     glUseProgram(shaderId);
 }
-
-/*
-void DrawElements()
-{
-    glActiveTexture(GL_TEXTURE0);
-    glBindVertexArray(VertexArrayObject);
-    glDrawElements(GL_TRIANGLES, sizeof(Vertices), GL_UNSIGNED_INT, 0);
-}
-*/
 
 unsigned int GetUniform(int shaderId, const std::string & name)
 {

@@ -12,7 +12,7 @@
 #include "shader.hpp"
 #include "texture.hpp"
 #include "jUtil.hpp"
-#include "text.h"
+#include "text.hpp"
 #include "window.hpp"
 
 struct ApplicationState
@@ -31,10 +31,10 @@ int RunApplication()
     CreateWindow(1800, 1200);
 
     // Load text fonts
-    std::map<char, Character>* characters = loadCharacters("fonts/arial.ttf");
+    std::map<char, Character>* characters = LoadCharacters("fonts/arial.ttf");
 
     // Load texture1
-    unsigned int texture1 = Texture::Create("./textures/container.jpg", false);
+    unsigned int texture1 = Texture::Create("./images/container.jpg", false);
 
     unsigned int Indices[] = {
     0, 1, 2, // first triangle
@@ -73,9 +73,9 @@ int RunApplication()
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 
-    jAssert(VertexArrayObject != 0, "VertexArrayObject isn't initialized, cannot init sprite");
-    jAssert(VertexBufferObject != 0, "VertexBufferObject isn't initialized, cannot init sprite");
-    jAssert(ElementBufferObject != 0, "ElementBufferObject isn't initialized, cannot init sprite");
+    JAssert(VertexArrayObject != 0, "VertexArrayObject isn't initialized, cannot init sprite");
+    JAssert(VertexBufferObject != 0, "VertexBufferObject isn't initialized, cannot init sprite");
+    JAssert(ElementBufferObject != 0, "ElementBufferObject isn't initialized, cannot init sprite");
 
     unsigned int shader1 = Shader::Create(
         "./shaders/default_vertex_shader.shader",

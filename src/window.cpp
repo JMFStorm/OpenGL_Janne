@@ -8,11 +8,11 @@ GLFWwindow* window;
 
 void CreateWindow(int width, int height)
 {
-    jAssert(glfwInit() == GLFW_TRUE, "glfwInit() failed");
+    JAssert(glfwInit() == GLFW_TRUE, "glfwInit() failed");
 
     window = glfwCreateWindow(width, height, "LearnOpenGL!", NULL, NULL);
 
-    jAssert(window != NULL, "glfwCreateWindow() failed");
+    JAssert(window != NULL, "glfwCreateWindow() failed");
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -31,7 +31,7 @@ void CreateWindow(int width, int height)
 
     // Load GLAD context
     int loaded = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-    jAssert(loaded == 1, "Failed to initialize OpenGL context GLAD");
+    JAssert(loaded == 1, "Failed to initialize OpenGL context GLAD");
 
     int nrAttributes;
     glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
