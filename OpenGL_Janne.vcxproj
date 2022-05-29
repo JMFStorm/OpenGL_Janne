@@ -167,14 +167,13 @@
     <ClCompile Include="src\jUtil.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\shader.cpp" />
-    <ClCompile Include="src\sprite.cpp" />
     <ClCompile Include="src\text.cpp" />
     <ClCompile Include="src\texture.cpp" />
     <ClCompile Include="src\window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\application.hpp" />
-    <ClInclude Include="src\file.h" />
+    <ClInclude Include="src\file.hpp" />
     <ClInclude Include="include\dlg\dlg.h" />
     <ClInclude Include="include\dlg\output.h" />
     <ClInclude Include="include\freetype\config\ftconfig.h" />
@@ -564,7 +563,6 @@
     <ClInclude Include="include\KHR\khrplatform.h" />
     <ClInclude Include="src\jUtil.hpp" />
     <ClInclude Include="src\shader.hpp" />
-    <ClInclude Include="src\sprite.h" />
     <ClInclude Include="src\stb_image.h" />
     <ClInclude Include="src\text.h" />
     <ClInclude Include="src\texture.hpp" />

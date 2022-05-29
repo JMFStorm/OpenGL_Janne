@@ -8,7 +8,7 @@
 #include <sstream>
 #include <iostream>
 
-#include "file.h"
+#include "file.hpp"
 #include "jUtil.hpp"
 
 class Shader

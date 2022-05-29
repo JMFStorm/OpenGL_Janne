@@ -33,9 +33,6 @@
     <ClCompile Include="src\texture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\sprite.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -914,7 +911,7 @@
     <ClInclude Include="src\shader.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\file.h">
+    <ClInclude Include="src\file.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\texture.hpp">
@@ -1224,9 +1221,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\jUtil.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\sprite.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\window.hpp">

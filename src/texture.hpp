@@ -2,15 +2,9 @@
 
 #include <string>
 
-class Texture
+namespace Texture
 {
-public:
-    unsigned int Id = 0;
-    bool IsRGBA = false;
+    int Create(const std::string& filePath, bool isRGBA);
 
-    std::string FilePath;
-
-    Texture(std::string filePath);
-
-    void Bind();
-};
+    void Bind(int textureId);
+}
