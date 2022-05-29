@@ -1,5 +1,7 @@
 #pragma once
 
+#include "shaderDataType.hpp"
+
 namespace VertexArray
 {
 	unsigned int Create();
@@ -8,5 +10,11 @@ namespace VertexArray
 
 	void Unbind();
 
-	void InitHardcodedVertexAttributes();
+	void SetVertexAttributePointer(
+		unsigned int attributeIndex,
+		int componentsSize,
+		ShaderDataType type,
+		bool normalize,
+		int strideByteSize,
+		void* offset);
 }

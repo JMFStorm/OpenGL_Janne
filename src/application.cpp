@@ -53,12 +53,31 @@ int RunApplication()
     };
 
     unsigned int vertexArrayObject = VertexArray::Create();
+
     VertexArray::Bind(vertexArrayObject);
 
     unsigned int VertexBufferObject = VertexBuffer::Create(vertices);
     unsigned int ElementBufferObject = IndexBuffer::Create(indices);
 
-    VertexArray::InitHardcodedVertexAttributes();
+    int vertexAttributeStride = 5 * sizeof(float);
+    int secondAttribOffset = 3;
+
+    VertexArray::SetVertexAttributePointer(
+        0,
+        3,
+        ShaderDataType::Float,
+        false,
+        vertexAttributeStride,
+        (void*)0);
+
+    VertexArray::SetVertexAttributePointer(
+        1,
+        2,
+        ShaderDataType::Float,
+        false,
+        vertexAttributeStride,
+        (void*)(secondAttribOffset * sizeof(float)));
+
     VertexArray::Unbind();
 
     unsigned int shader1 = Shader::Create(

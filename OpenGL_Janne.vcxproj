@@ -168,6 +168,7 @@
     <ClCompile Include="src\jUtil.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\shader.cpp" />
+    <ClCompile Include="src\shaderDataType.cpp" />
     <ClCompile Include="src\vertexArray.cpp" />
     <ClCompile Include="src\text.cpp" />
     <ClCompile Include="src\texture.cpp" />
@@ -566,6 +567,7 @@
     <ClInclude Include="include\KHR\khrplatform.h" />
     <ClInclude Include="src\jUtil.hpp" />
     <ClInclude Include="src\shader.hpp" />
+    <ClInclude Include="src\shaderDataType.hpp" />
     <ClInclude Include="src\stb_image.h" />
     <ClInclude Include="src\text.hpp" />
     <ClInclude Include="src\texture.hpp" />

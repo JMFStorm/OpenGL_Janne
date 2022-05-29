@@ -23,14 +23,24 @@ namespace VertexArray
 		glBindVertexArray(0);
 	}
 
-	void InitHardcodedVertexAttributes()
+	void SetVertexAttributePointer(
+		unsigned int attributeIndex, 
+		int componentsSize,
+		ShaderDataType type,
+		bool normalize,
+		int strideByteSize,
+		void* offset)
 	{
-		// Position attribute
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+		unsigned int glType = ShaderDataTypeToOpenGLBaseType(type);
+		int setNormalize = normalize ? GL_TRUE : GL_FALSE;
 
-		// Texture attribute
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+		glEnableVertexAttribArray(attributeIndex);
+		glVertexAttribPointer(
+			attributeIndex,
+			componentsSize,
+			glType,
+			setNormalize,
+			strideByteSize,
+			offset);
 	}
 }
