@@ -161,18 +161,21 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\application.cpp" />
+    <ClCompile Include="src\buffer.cpp" />
     <ClCompile Include="src\file.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="include\glm\detail\glm.cpp" />
     <ClCompile Include="src\jUtil.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\shader.cpp" />
+    <ClCompile Include="src\vertexArray.cpp" />
     <ClCompile Include="src\text.cpp" />
     <ClCompile Include="src\texture.cpp" />
     <ClCompile Include="src\window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\application.hpp" />
+    <ClInclude Include="src\buffer.hpp" />
     <ClInclude Include="src\file.hpp" />
     <ClInclude Include="include\dlg\dlg.h" />
     <ClInclude Include="include\dlg\output.h" />
@@ -566,6 +569,7 @@
     <ClInclude Include="src\stb_image.h" />
     <ClInclude Include="src\text.hpp" />
     <ClInclude Include="src\texture.hpp" />
+    <ClInclude Include="src\vertexArray.hpp" />
     <ClInclude Include="src\window.hpp" />
   </ItemGroup>
   <ItemGroup>

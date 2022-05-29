@@ -5,14 +5,17 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include <map>
+#include <vector>
 
 #pragma warning(pop)
 
 #include "application.hpp"
+#include "buffer.hpp"
 #include "shader.hpp"
 #include "texture.hpp"
 #include "jUtil.hpp"
 #include "text.hpp"
+#include "vertexArray.hpp"
 #include "window.hpp"
 
 struct ApplicationState
@@ -36,12 +39,12 @@ int RunApplication()
     // Load texture1
     unsigned int texture1 = Texture::Create("./images/container.jpg", false);
 
-    unsigned int Indices[] = {
-    0, 1, 2, // first triangle
-    2, 3, 0  // second triangle
+    std::vector<unsigned int> indices{
+        0, 1, 2, // first triangle
+        2, 3, 0  // second triangle
     };
 
-    float Vertices[] = {
+    std::vector<float> vertices {
         // positions         // texture coords
         -0.5f,  0.5f, 0.0f,  0.0f, 1.0f, // top left 
          0.5f,  0.5f, 0.0f,  1.0f, 1.0f, // top right
@@ -49,21 +52,10 @@ int RunApplication()
         -0.5f, -0.5f, 0.0f,  0.0f, 0.0f  // bottom left
     };
 
-    unsigned int VertexArrayObject;
-    unsigned int VertexBufferObject;
-    unsigned int ElementBufferObject;
+    unsigned int VertexArrayObject = VertexArray::Create();
 
-    glGenVertexArrays(1, &VertexArrayObject);
-    glGenBuffers(1, &VertexBufferObject);
-    glGenBuffers(1, &ElementBufferObject);
-
-    glBindVertexArray(VertexArrayObject);
-
-    glBindBuffer(GL_ARRAY_BUFFER, VertexBufferObject);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(Vertices), Vertices, GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementBufferObject);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Indices), Indices, GL_STATIC_DRAW);
+    unsigned int VertexBufferObject = VertexBuffer::Create(vertices);
+    unsigned int ElementBufferObject = IndexBuffer::Create(indices);
 
     // Position attribute
     glEnableVertexAttribArray(0);
@@ -72,10 +64,6 @@ int RunApplication()
     // Texture attribute
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-
-    JAssert(VertexArrayObject != 0, "VertexArrayObject isn't initialized, cannot init sprite");
-    JAssert(VertexBufferObject != 0, "VertexBufferObject isn't initialized, cannot init sprite");
-    JAssert(ElementBufferObject != 0, "ElementBufferObject isn't initialized, cannot init sprite");
 
     unsigned int shader1 = Shader::Create(
         "./shaders/default_vertex_shader.shader",
@@ -95,8 +83,11 @@ int RunApplication()
         Shader::Use(shader1);
 
         glActiveTexture(GL_TEXTURE0);
-        glBindVertexArray(VertexArrayObject);
-        glDrawElements(GL_TRIANGLES, sizeof(Vertices), GL_UNSIGNED_INT, 0);
+
+        VertexArray::Bind(VertexArrayObject);
+
+        int elementsCount = indices.size();
+        glDrawElements(GL_TRIANGLES, elementsCount, GL_UNSIGNED_INT, 0);
 
         SwapScreenBuffer();
     }
