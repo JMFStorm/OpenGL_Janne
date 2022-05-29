@@ -6,7 +6,7 @@
 
 namespace Texture
 {
-    int Create(const std::string &filePath, bool isRGBA)
+    unsigned int Create(const std::string &filePath, bool isRGBA)
     {
         jAssert(filePath.empty() == false, "FilePath missing, cannot intit texture ");
 
@@ -35,7 +35,7 @@ namespace Texture
         return textureId;
     }
 
-    void Bind(int textureId)
+    void Bind(unsigned int textureId)
     {
         jAssert(textureId != 0, "Id missing, cannot bind texture ");
         glBindTexture(GL_TEXTURE_2D, textureId);

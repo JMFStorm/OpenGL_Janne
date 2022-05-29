@@ -34,15 +34,54 @@ int RunApplication()
     std::map<char, Character>* characters = loadCharacters("fonts/arial.ttf");
 
     // Load texture1
-    int texture1 = Texture::Create("./textures/container.jpg", false);
+    unsigned int texture1 = Texture::Create("./textures/container.jpg", false);
 
-    // Load shader1
-    Shader* shader1 = new Shader(
-        "MyShader_01",
+    unsigned int Indices[] = {
+    0, 1, 2, // first triangle
+    2, 3, 0  // second triangle
+    };
+
+    float Vertices[] = {
+        // positions         // texture coords
+        -0.5f,  0.5f, 0.0f,  0.0f, 1.0f, // top left 
+         0.5f,  0.5f, 0.0f,  1.0f, 1.0f, // top right
+         0.5f, -0.5f, 0.0f,  1.0f, 0.0f, // bottom right
+        -0.5f, -0.5f, 0.0f,  0.0f, 0.0f  // bottom left
+    };
+
+    unsigned int VertexArrayObject;
+    unsigned int VertexBufferObject;
+    unsigned int ElementBufferObject;
+
+    glGenVertexArrays(1, &VertexArrayObject);
+    glGenBuffers(1, &VertexBufferObject);
+    glGenBuffers(1, &ElementBufferObject);
+
+    glBindVertexArray(VertexArrayObject);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VertexBufferObject);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Vertices), Vertices, GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementBufferObject);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Indices), Indices, GL_STATIC_DRAW);
+
+    // Position attribute
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+
+    // Texture attribute
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+
+    jAssert(VertexArrayObject != 0, "VertexArrayObject isn't initialized, cannot init sprite");
+    jAssert(VertexBufferObject != 0, "VertexBufferObject isn't initialized, cannot init sprite");
+    jAssert(ElementBufferObject != 0, "ElementBufferObject isn't initialized, cannot init sprite");
+
+    unsigned int shader1 = Shader::Create(
         "./shaders/default_vertex_shader.shader",
         "./shaders/default_fragment_shader.shader");
 
-    shader1->SetInt("texture1", 0);
+    Shader::SetInt(shader1, "texture1", 0);
 
     while (!GetWindowShouldClose())
     {
@@ -51,6 +90,13 @@ int RunApplication()
         HandleInputEvents();
 
         ClearWindowBuffer(0.2f, 0.3f, 0.3f, 1.0f);
+
+        Texture::Bind(texture1);
+        Shader::Use(shader1);
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindVertexArray(VertexArrayObject);
+        glDrawElements(GL_TRIANGLES, sizeof(Vertices), GL_UNSIGNED_INT, 0);
 
         SwapScreenBuffer();
     }

@@ -4,7 +4,7 @@
 
 namespace Texture
 {
-    int Create(const std::string& filePath, bool isRGBA);
+    unsigned int Create(const std::string& filePath, bool isRGBA);
 
-    void Bind(int textureId);
+    void Bind(unsigned int textureId);
 }

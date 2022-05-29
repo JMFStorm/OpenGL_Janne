@@ -11,66 +11,33 @@
 #include "file.hpp"
 #include "jUtil.hpp"
 
-class Shader
+namespace Shader
 {
-public:
-    unsigned int Id = -1;
-
-    glm::vec3 m_Color = { 1.0f, 1.0f, 1.0f };
-
-    std::string Name;
-    std::string VertexFilePath;
-    std::string FragmentFilePath;
-
-    Shader(
-        std::string Name,
-        std::string VertexFilePath,
-        std::string FragmentFilePath);
-
-    void Use() const;
-    void DrawElements();
-
-    unsigned int GetUniform(const std::string& name) const;
-
-    void SetBool(const std::string& name, const bool value) const;
-
-    void SetInt(const std::string& name, const int value) const;
-
-    void SetFloat(const std::string& name, const float value) const;
-
-    void SetVec2(const std::string& name, const glm::vec2& value) const;
-    void SetVec2(const std::string& name, const float x, const float y) const;
-
-    void SetVec3(const std::string& name, const glm::vec3& value) const;
-    void SetVec3(const std::string& name, float x, float y, float z) const;
-
-    void SetVec4(const std::string& name, const glm::vec4& value) const;
-    void SetVec4(const std::string& name, float x, float y, float z, float w);
-
-    void SetMat2(const std::string& name, const glm::mat2& mat) const;
-    void SetMat3(const std::string& name, const glm::mat3& mat) const;
-
-    void SetMat4(const std::string& name, const glm::mat4& mat) const;
-
-private:
-    unsigned int VertexArrayObject = 0;
-    unsigned int VertexBufferObject = 0;
-    unsigned int ElementBufferObject = 0;
-
-    unsigned int Indices[3 * 2] = {
-        0, 1, 2, // first triangle
-        2, 3, 0  // second triangle
-    };
-
-    float Vertices[5 * 4] = {
-        // positions         // texture coords
-        -0.5f,  0.5f, 0.0f,  0.0f, 1.0f, // top left 
-         0.5f,  0.5f, 0.0f,  1.0f, 1.0f, // top right
-         0.5f, -0.5f, 0.0f,  1.0f, 0.0f, // bottom right
-        -0.5f, -0.5f, 0.0f,  0.0f, 0.0f  // bottom left
-    };
-
-    unsigned int CreateShaderProgram(
+    unsigned int Create(
         const std::string& vertexFilePath,
-        const std::string& fragmentFilePath) const;
+        const std::string& fragmentFilePath);
+
+    void Use(unsigned int shaderId);
+
+    unsigned int GetUniform(int shaderId, const std::string& name);
+
+    void SetBool(int shaderId, const std::string& name, const bool value);
+
+    void SetInt(int shaderId, const std::string& name, const int value);
+
+    void SetFloat(int shaderId, const std::string& name, const float value);
+
+    void SetVec2(int shaderId, const std::string& name, const glm::vec2& value);
+    void SetVec2(int shaderId, const std::string& name, const float x, const float y);
+
+    void SetVec3(int shaderId, const std::string& name, const glm::vec3& value);
+    void SetVec3(int shaderId, const std::string& name, float x, float y, float z);
+
+    void SetVec4(int shaderId, const std::string& name, const glm::vec4& value);
+    void SetVec4(int shaderId, const std::string& name, float x, float y, float z, float w);
+
+    void SetMat2(int shaderId, const std::string& name, const glm::mat2& mat);
+    void SetMat3(int shaderId, const std::string& name, const glm::mat3& mat);
+
+    void SetMat4(int shaderId, const std::string& name, const glm::mat4& mat);
 };
