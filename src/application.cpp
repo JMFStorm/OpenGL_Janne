@@ -31,7 +31,7 @@ int RunApplication()
     appState.deltaTime = 0.0f;
     appState.lastFrame = 0.0f;
 
-    CreateWindow(1800, 1200);
+    Window::Create(1800, 1200);
 
     // Load text fonts
     std::map<char, Character>* characters = LoadCharacters("fonts/arial.ttf");
@@ -52,19 +52,14 @@ int RunApplication()
         -0.5f, -0.5f, 0.0f,  0.0f, 0.0f  // bottom left
     };
 
-    unsigned int VertexArrayObject = VertexArray::Create();
-    VertexArray::Bind(VertexArrayObject);
+    unsigned int vertexArrayObject = VertexArray::Create();
+    VertexArray::Bind(vertexArrayObject);
 
     unsigned int VertexBufferObject = VertexBuffer::Create(vertices);
     unsigned int ElementBufferObject = IndexBuffer::Create(indices);
 
-    // Position attribute
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-
-    // Texture attribute
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    VertexArray::InitHardcodedVertexAttributes();
+    VertexArray::Unbind();
 
     unsigned int shader1 = Shader::Create(
         "./shaders/default_vertex_shader.shader",
@@ -72,25 +67,25 @@ int RunApplication()
 
     Shader::SetInt(shader1, "texture1", 0);
 
-    while (!GetWindowShouldClose())
+    while (!Window::ShouldClose())
     {
         appState.deltaTime = CalculateDeltatime();
 
-        HandleInputEvents();
+        Window::HandleInputEvents();
 
-        ClearWindowBuffer(0.2f, 0.3f, 0.3f, 1.0f);
+        Window::ClearScreenBuffer(0.2f, 0.3f, 0.3f, 1.0f);
 
         Texture::Bind(texture1);
         Shader::Use(shader1);
 
         glActiveTexture(GL_TEXTURE0);
 
-        VertexArray::Bind(VertexArrayObject);
+        VertexArray::Bind(vertexArrayObject);
 
         int elementsCount = indices.size();
         glDrawElements(GL_TRIANGLES, elementsCount, GL_UNSIGNED_INT, 0);
 
-        SwapScreenBuffer();
+        Window::SwapScreenBuffer();
     }
 
     return 0;
