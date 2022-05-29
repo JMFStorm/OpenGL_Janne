@@ -9,7 +9,6 @@ namespace VertexArray
 		unsigned int vertexArrayObject;
 
 		glGenVertexArrays(1, &vertexArrayObject);
-		glBindVertexArray(vertexArrayObject);
 
 		return vertexArrayObject;
 	}

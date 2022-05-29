@@ -53,6 +53,7 @@ int RunApplication()
     };
 
     unsigned int VertexArrayObject = VertexArray::Create();
+    VertexArray::Bind(VertexArrayObject);
 
     unsigned int VertexBufferObject = VertexBuffer::Create(vertices);
     unsigned int ElementBufferObject = IndexBuffer::Create(indices);

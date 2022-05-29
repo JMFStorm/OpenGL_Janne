@@ -2,6 +2,8 @@
 
 #include <glad/glad.h>
 
+#include "jUtil.hpp"
+
 namespace VertexBuffer
 {
 	unsigned int Create(const std::vector<float> vertices)
@@ -14,6 +16,15 @@ namespace VertexBuffer
 		int sizeInBytes = vertices.size() * sizeof(unsigned int);
 
 		glBufferData(GL_ARRAY_BUFFER, sizeInBytes, &vertices[0], GL_STATIC_DRAW);
+
+		GLint size = 0;
+		glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);
+
+		if (sizeInBytes != size)
+		{
+			glDeleteBuffers(1, &vertexBufferObject);
+			JAssert(sizeInBytes != size, "VertexBufferObject GL_BUFFER_SIZE failed");
+		}
 
 		return vertexBufferObject;
 	}
@@ -31,6 +42,15 @@ namespace IndexBuffer
 		int sizeInBytes = indices.size() * sizeof(unsigned int);
 
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeInBytes, &indices[0], GL_STATIC_DRAW);
+
+		GLint size = 0;
+		glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);
+
+		if (sizeInBytes != size)
+		{
+			glDeleteBuffers(1, &indexBufferObject);
+			JAssert(sizeInBytes != size, "IndexBufferObject GL_BUFFER_SIZE failed");
+		}
 
 		return indexBufferObject;
 	}
