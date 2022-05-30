@@ -707,6 +707,9 @@
     <Image Include="images\awesomeface.png" />
     <Image Include="images\container.jpg" />
   </ItemGroup>
+  <ItemGroup>
+    <Font Include="fonts\arial.ttf" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
