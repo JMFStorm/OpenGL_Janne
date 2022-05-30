@@ -19,8 +19,18 @@
 #include <fstream>
 #include <sstream>
 #include <stdio.h>
+#include <iomanip>
 
 #pragma warning(pop)
+
+#define WINDOW_WIDTH_DEFAULT 1600
+#define WINDOW_HEIGHT_DEFAULT 1200
+
+namespace Shader
+{
+    unsigned int Create(const std::string& vertexFilePath, const std::string& fragmentFilePath);
+    void Use(unsigned int shaderId);
+}
 
 void JAssert(bool assertion, std::string errorMessage)
 {
@@ -32,20 +42,26 @@ void JAssert(bool assertion, std::string errorMessage)
     }
 }
 
-struct Character {
+struct FreeTypeCharacter {
     unsigned int textureId;  // ID handle of the glyph texture
     glm::ivec2   size;       // Size of glyph
     glm::ivec2   bearing;    // Offset from baseline to left/top of glyph
     unsigned int advance;    // Offset to advance to next glyph
 };
 
-std::map<GLchar, Character> gCharacters;
+struct FreeTypeFont {
+    std::map<GLchar, FreeTypeCharacter> characters;
+    int shader;
+    int vao;
+    int vbo;
+} gDebugFTFont;
 
-void LoadCharacters(const char* fontPath)
+void LoadFreeTypeFont(const char* fontPath, FreeTypeFont* font)
 {
     FT_Library ft;
     FT_Face face;
     FT_Error result;
+    std::map<char, FreeTypeCharacter> characterArr;
 
     result = FT_Init_FreeType(&ft);
     JAssert(result == 0, "ERROR::FREETYPE: Could not init FreeType Library");
@@ -93,21 +109,51 @@ void LoadCharacters(const char* fontPath)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
         // Now store character for later use
-        Character character = {
+        FreeTypeCharacter character = {
             texture,
             glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
             glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
             face->glyph->advance.x
         };
 
-        auto newChar = std::pair<char, Character>(c, character);
-        gCharacters.insert(newChar);
+        auto newChar = std::pair<char, FreeTypeCharacter>(c, character);
+        characterArr.insert(newChar);
     }
-
-    // glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
     FT_Done_Face(face);
     FT_Done_FreeType(ft);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    unsigned int textVAO, textVBO;
+    glGenVertexArrays(1, &textVAO);
+    glGenBuffers(1, &textVBO);
+    glBindVertexArray(textVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, textVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+
+    unsigned int textShader = Shader::Create(
+        "./shaders/font_vertex_shader.shader",
+        "./shaders/font_fragment_shader.shader");
+
+    glm::mat4 projection = glm::ortho(
+        0.0f,
+        (float)WINDOW_WIDTH_DEFAULT,
+        0.0f,
+        (float)WINDOW_HEIGHT_DEFAULT);
+
+    Shader::Use(textShader);
+    glUniformMatrix4fv(glGetUniformLocation(textShader, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+
+    font->shader = textShader;
+    font->vao = textVAO;
+    font->vbo = textVBO;
+    font->characters = characterArr;
 }
 
 std::string ReadFileToString(std::string filePath)
@@ -539,35 +585,33 @@ namespace Window
     }
 }
 
-void RenderText(
-    int shader,
-    int vao,
-    int vbo,
+void RenderFreeTypeText(
+    FreeTypeFont* font,
     std::string text,
     float x,
     float y,
     float scale,
     glm::vec3 color)
 {
-    // activate corresponding render state	
-    Shader::Use(shader);
-    glUniform3f(glGetUniformLocation(shader, "textColor"), color.x, color.y, color.z);
+    // Activate corresponding render state	
+    Shader::Use(font->shader);
+    Shader::SetVec3(font->shader, "textColor", color.x, color.y, color.z);
     glActiveTexture(GL_TEXTURE0);
+    VertexArray::Bind(font->vao);
 
-    VertexArray::Bind(vao);
-
-    // iterate through all characters
+    // Iterate through all characters
     std::string::const_iterator c;
     for (c = text.begin(); c != text.end(); c++)
     {
-        Character ch = gCharacters[*c];
+        FreeTypeCharacter ch = font->characters[*c];
 
         float xpos = x + ch.bearing.x * scale;
         float ypos = y - (ch.size.y - ch.bearing.y) * scale;
 
         float w = ch.size.x * scale;
         float h = ch.size.y * scale;
-        // update VBO for each character
+
+        // Update VBO for each character
         float vertices[6][4] = {
             { xpos,     ypos + h,   0.0f, 0.0f },
             { xpos,     ypos,       0.0f, 1.0f },
@@ -577,48 +621,48 @@ void RenderText(
             { xpos + w, ypos,       1.0f, 1.0f },
             { xpos + w, ypos + h,   1.0f, 0.0f }
         };
-        // render glyph texture over quad
+
+        // Render glyph texture over quad
         glBindTexture(GL_TEXTURE_2D, ch.textureId);
-        // update content of VBO memory
-        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+
+        // Update content of VBO memory
+        glBindBuffer(GL_ARRAY_BUFFER, font->vbo);
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        // render quad
+
+        // Render quad
         glDrawArrays(GL_TRIANGLES, 0, 6);
-        // now advance cursors for next glyph (note that advance is number of 1/64 pixels)
+
+        // Now advance cursors for next glyph (note that advance is number of 1/64 pixels)
         x += (ch.advance >> 6) * scale; // bitshift by 6 to get value in pixels (2^6 = 64)
     }
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
     VertexArray::Unbind();
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 struct ApplicationState
 {
-    float currentFrameTime;
     float deltaTime;
-    float lastFrame;
+    float currentFrameTime;
+    float lastFrameTime;
 };
-
-#define WINDOW_WIDTH_DEFAULT 1600
-#define WINDOW_HEIGHT_DEFAULT 1200
 
 namespace Application
 {
-    float CalculateDeltatime(ApplicationState* appState)
+    void CalculateDeltatime(ApplicationState* appState)
     {
         appState->currentFrameTime = glfwGetTime();
-        appState->lastFrame = appState->currentFrameTime;
-
-        float deltatime = appState->currentFrameTime - appState->lastFrame;
-        return deltatime;
+        appState->deltaTime = appState->currentFrameTime - appState->lastFrameTime;
+        appState->lastFrameTime = appState->currentFrameTime;
     }
 
     int Run()
     {
         ApplicationState appState;
         appState.currentFrameTime = 0.0f;
+        appState.lastFrameTime = 0.0f;
         appState.deltaTime = 0.0f;
-        appState.lastFrame = 0.0f;
 
         int result;
 
@@ -636,35 +680,8 @@ namespace Application
         printf("Using OpenGL %d.%d\n", GLVersion.major, GLVersion.minor);
         printf("Maximum nr of vertex attributes supported: %d\n", result);
 
-        // Load text fonts
-        LoadCharacters("fonts/arial.ttf");
-
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-        unsigned int textVAO, textVBO;
-        glGenVertexArrays(1, &textVAO);
-        glGenBuffers(1, &textVBO);
-        glBindVertexArray(textVAO);
-        glBindBuffer(GL_ARRAY_BUFFER, textVBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindVertexArray(0);
-
-        unsigned int textShader1 = Shader::Create(
-            "./shaders/font_vertex_shader.shader",
-            "./shaders/font_fragment_shader.shader");
-
-        glm::mat4 projection = glm::ortho(
-            0.0f,
-            (float)WINDOW_WIDTH_DEFAULT,
-            0.0f,
-            (float)WINDOW_HEIGHT_DEFAULT);
-
-        Shader::Use(textShader1);
-        glUniformMatrix4fv(glGetUniformLocation(textShader1, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+        // Load text fonts for debug
+        LoadFreeTypeFont("fonts/arial.ttf", &gDebugFTFont);
 
         // Load texture1
         unsigned int texture1 = Texture::Create("./images/container.jpg", false);
@@ -718,8 +735,6 @@ namespace Application
 
         while (!Window::ShouldClose(window))
         {
-            appState.deltaTime = CalculateDeltatime(&appState);
-
             Window::HandleInputEvents(window);
 
             Window::ClearScreenBuffer(0.2f, 0.3f, 0.3f, 1.0f);
@@ -733,27 +748,36 @@ namespace Application
             int elementsCount = indices.size();
             glDrawElements(GL_TRIANGLES, elementsCount, GL_UNSIGNED_INT, 0);
 
-            RenderText(
-                textShader1,
-                textVAO,
-                textVBO, 
-                "This is sample text", 
-                25.0f, 
-                25.0f, 
-                1.0f, 
-                glm::vec3(0.5, 0.8f, 0.2f));
+            float deltaMs = appState.deltaTime * 1000;
+            float currentS = appState.currentFrameTime;
 
-            RenderText(
-                textShader1, 
-                textVAO, 
-                textVBO, 
-                "(C) LearnOpenGL.com", 
-                540.0f,
-                570.0f,
+            std::stringstream stream;
+            stream << std::fixed << std::setprecision(2) << deltaMs;
+            auto delta = "Delta: " + stream.str() + "ms";
+
+            stream.str("");
+            stream << std::fixed << std::setprecision(2) << currentS;
+            auto current = "Time : " + stream.str() + "s";
+
+            RenderFreeTypeText(
+                &gDebugFTFont,
+                delta,
+                25.0f,
+                15.0f,
                 0.5f,
-                glm::vec3(0.3, 0.7f, 0.9f));
+                glm::vec3(0.8, 0.8f, 0.8f));
+            
+            RenderFreeTypeText(
+                &gDebugFTFont,
+                current,
+                25.0f,
+                35.0f,
+                0.5f,
+                glm::vec3(0.8, 0.8f, 0.8f));
 
             Window::SwapScreenBuffer(window);
+
+            CalculateDeltatime(&appState);
         }
 
         return 0;
