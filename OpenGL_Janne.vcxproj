@@ -708,7 +708,7 @@
     <Image Include="images\container.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <Font Include="fonts\arial.ttf" />
+    <Font Include="fonts\Roboto-Regular.ttf" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
