@@ -13,13 +13,15 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
-#include <map>
-#include <vector>
-#include <iostream>
+#include <chrono>
 #include <fstream>
+#include <iostream>
+#include <iomanip>
+#include <map>
 #include <sstream>
 #include <stdio.h>
-#include <iomanip>
+#include <thread>
+#include <vector>
 
 #pragma warning(pop)
 
@@ -530,11 +532,22 @@ namespace Window
         glViewport(0, 0, width, height);
     }
 
-    GLFWwindow* Create(int width, int height)
+    GLFWwindow* Create(bool fullscreen)
     {
-        GLFWwindow* window;
+        GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+        const GLFWvidmode* mode = glfwGetVideoMode(monitor);
 
-        window = glfwCreateWindow(width, height, "LearnOpenGL!", NULL, NULL);
+        glfwWindowHint(GLFW_RED_BITS, mode->redBits);
+        glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
+        glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
+        glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
+
+        GLFWwindow* window;
+        auto fullscreenOption = fullscreen ? monitor : NULL;
+        auto widthOption = fullscreen ? mode->width : WINDOW_WIDTH_DEFAULT;
+        auto heightOption = fullscreen ? mode->height : WINDOW_HEIGHT_DEFAULT;
+
+        window = glfwCreateWindow(widthOption, heightOption, "LearnOpenGL!", fullscreenOption, NULL);
         JAssert(window != NULL, "glfwCreateWindow() failed");
 
         glfwMakeContextCurrent(window);
@@ -650,35 +663,60 @@ void RenderFreeTypeText(
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-struct ApplicationState
+struct FpsCounter
 {
-    float deltaTime;
+    unsigned long frames;
+    unsigned int displayFps;
+    float previousTimeSecond;
+    unsigned int overflowFrames;
     float currentFrameTime;
     float lastFrameTime;
+    float deltaTime;
+};
+
+struct ApplicationState
+{
+    FpsCounter fpsCounter;
 };
 
 namespace Application
 {
-    void CalculateDeltatime(ApplicationState* appState)
+    void CalculateDeltatime(FpsCounter* fpsCounter)
     {
-        appState->currentFrameTime = glfwGetTime();
-        appState->deltaTime = appState->currentFrameTime - appState->lastFrameTime;
-        appState->lastFrameTime = appState->currentFrameTime;
+        fpsCounter->currentFrameTime = glfwGetTime();
+        fpsCounter->deltaTime = fpsCounter->currentFrameTime - fpsCounter->lastFrameTime;
+        fpsCounter->lastFrameTime = fpsCounter->currentFrameTime;
+    }
+
+    void CalculateFpsScuffed(FpsCounter* fpsCounter)
+    {
+        fpsCounter->frames++;
+
+        if (1.0f < fpsCounter->currentFrameTime - fpsCounter->previousTimeSecond)
+        {
+            fpsCounter->displayFps = fpsCounter->frames;
+            fpsCounter->frames = 0;
+            fpsCounter->previousTimeSecond = fpsCounter->currentFrameTime;
+        }
     }
 
     int Run()
     {
         ApplicationState appState;
-        appState.currentFrameTime = 0.0f;
-        appState.lastFrameTime = 0.0f;
-        appState.deltaTime = 0.0f;
+        appState.fpsCounter.currentFrameTime = 0.0f;
+        appState.fpsCounter.lastFrameTime = 0.0f;
+        appState.fpsCounter.deltaTime = 0.0f;
+        appState.fpsCounter.frames = 0;
+        appState.fpsCounter.displayFps = 0;
+        appState.fpsCounter.previousTimeSecond = 1.0f;
+        appState.fpsCounter.overflowFrames = 0;
 
         int result;
 
         result = glfwInit();
         JAssert(result == GLFW_TRUE, "glfwInit() failed");
 
-        GLFWwindow* window = Window::Create(WINDOW_WIDTH_DEFAULT, WINDOW_HEIGHT_DEFAULT);
+        GLFWwindow* window = Window::Create(false);
 
         // Load GLAD context
         result = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
@@ -757,20 +795,21 @@ namespace Application
             int elementsCount = indices.size();
             glDrawElements(GL_TRIANGLES, elementsCount, GL_UNSIGNED_INT, 0);
 
-            float deltaMs = appState.deltaTime * 1000;
-            float currentS = appState.currentFrameTime;
-
             std::stringstream stream;
-            stream << std::fixed << std::setprecision(2) << deltaMs;
-            auto delta = "Delta: " + stream.str() + "ms";
+            stream << std::fixed << std::setprecision(2) << appState.fpsCounter.deltaTime * 1000;
+            auto displayDelta = "Delta: " + stream.str() + "ms";
 
             stream.str("");
-            stream << std::fixed << std::setprecision(1) << currentS;
-            auto current = "Time: " + stream.str() + "s";
+            stream << std::fixed << std::setprecision(1) << appState.fpsCounter.currentFrameTime;
+            auto displayCurrent = "Time: " + stream.str() + "s";
+
+            stream.str("");
+            stream << std::fixed << std::setprecision(1) << appState.fpsCounter.displayFps;
+            auto displayFps = "FPS: " + stream.str();
 
             RenderFreeTypeText(
                 &gDebugFTFont,
-                delta,
+                displayDelta,
                 1350.0f,
                 1160.0f,
                 1.0f,
@@ -778,15 +817,24 @@ namespace Application
             
             RenderFreeTypeText(
                 &gDebugFTFont,
-                current,
+                displayCurrent,
                 1350.0f,
                 1130.0f,
                 1.0f,
                 glm::vec3(0.8, 0.8f, 0.8f));
 
+            RenderFreeTypeText(
+                &gDebugFTFont,
+                displayFps,
+                1350.0f,
+                1100.0f,
+                1.0f,
+                glm::vec3(0.8, 0.8f, 0.8f));
+
             Window::SwapScreenBuffer(window);
 
-            CalculateDeltatime(&appState);
+            CalculateDeltatime(&appState.fpsCounter);
+            CalculateFpsScuffed(&appState.fpsCounter);
         }
 
         return 0;
