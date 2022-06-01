@@ -667,10 +667,10 @@ struct FpsCounter
 {
     unsigned long frames;
     unsigned int displayFps;
-    float previousTimeSecond;
-    unsigned int overflowFrames;
-    float currentFrameTime;
-    float lastFrameTime;
+    float previousCurrentTime;
+    float currentTime;
+    float lastFpsCalcTime;
+    float overflowedFpsCalcTime;
     float deltaTime;
 };
 
@@ -681,35 +681,45 @@ struct ApplicationState
 
 namespace Application
 {
+    void IncrementFrames(FpsCounter* fpsCounter, unsigned int frames)
+    {
+        fpsCounter->frames += frames;
+
+    }
     void CalculateDeltatime(FpsCounter* fpsCounter)
     {
-        fpsCounter->currentFrameTime = glfwGetTime();
-        fpsCounter->deltaTime = fpsCounter->currentFrameTime - fpsCounter->lastFrameTime;
-        fpsCounter->lastFrameTime = fpsCounter->currentFrameTime;
+        fpsCounter->currentTime = glfwGetTime();
+        fpsCounter->deltaTime = fpsCounter->currentTime - fpsCounter->lastFpsCalcTime;
+        fpsCounter->lastFpsCalcTime = fpsCounter->currentTime;
     }
 
     void CalculateFpsScuffed(FpsCounter* fpsCounter)
     {
-        fpsCounter->frames++;
+        const float second = 1.0f;
+        const float secondsElapsedFromPrevious = (fpsCounter->currentTime + fpsCounter->overflowedFpsCalcTime) 
+            - fpsCounter->previousCurrentTime;
 
-        if (1.0f < fpsCounter->currentFrameTime - fpsCounter->previousTimeSecond)
+        if (second < secondsElapsedFromPrevious)
         {
             fpsCounter->displayFps = fpsCounter->frames;
             fpsCounter->frames = 0;
-            fpsCounter->previousTimeSecond = fpsCounter->currentFrameTime;
+            fpsCounter->previousCurrentTime = fpsCounter->currentTime;
+            fpsCounter->overflowedFpsCalcTime = secondsElapsedFromPrevious - second;
+
+            std::cout << "Overflow: " << fpsCounter->overflowedFpsCalcTime << "\n";
         }
     }
 
     int Run()
     {
         ApplicationState appState;
-        appState.fpsCounter.currentFrameTime = 0.0f;
-        appState.fpsCounter.lastFrameTime = 0.0f;
+        appState.fpsCounter.currentTime = 0.0f;
+        appState.fpsCounter.lastFpsCalcTime = 0.0f;
         appState.fpsCounter.deltaTime = 0.0f;
         appState.fpsCounter.frames = 0;
         appState.fpsCounter.displayFps = 0;
-        appState.fpsCounter.previousTimeSecond = 1.0f;
-        appState.fpsCounter.overflowFrames = 0;
+        appState.fpsCounter.previousCurrentTime = 1.0f; // Start init from one second
+        appState.fpsCounter.overflowedFpsCalcTime = 0.0f;
 
         int result;
 
@@ -800,7 +810,7 @@ namespace Application
             auto displayDelta = "Delta: " + stream.str() + "ms";
 
             stream.str("");
-            stream << std::fixed << std::setprecision(1) << appState.fpsCounter.currentFrameTime;
+            stream << std::fixed << std::setprecision(1) << appState.fpsCounter.currentTime;
             auto displayCurrent = "Time: " + stream.str() + "s";
 
             stream.str("");
@@ -833,6 +843,7 @@ namespace Application
 
             Window::SwapScreenBuffer(window);
 
+            IncrementFrames(&appState.fpsCounter, 1);
             CalculateDeltatime(&appState.fpsCounter);
             CalculateFpsScuffed(&appState.fpsCounter);
         }
