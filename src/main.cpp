@@ -249,8 +249,6 @@ struct ApplicationState
     FpsCounter fpsCounter;
 };
 
-FreeTypeFont gDebugFTFont;
-
 namespace Application
 {
     void IncrementFrames(FpsCounter* fpsCounter, unsigned int frames)
@@ -277,14 +275,14 @@ namespace Application
             fpsCounter->frames = 0;
             fpsCounter->previousCurrentTime = fpsCounter->currentTime;
             fpsCounter->overflowedFpsCalcTime = secondsElapsedFromPrevious - second;
-
-            std::cout << "Overflow: " << fpsCounter->overflowedFpsCalcTime << "\n";
         }
     }
 
     int Run()
     {
+        FreeTypeFont gDebugFTFont;
         ApplicationState appState;
+
         appState.fpsCounter.currentTime = 0.0f;
         appState.fpsCounter.lastFpsCalcTime = 0.0f;
         appState.fpsCounter.deltaTime = 0.0f;
@@ -389,11 +387,9 @@ namespace Application
             stream << std::fixed << std::setprecision(1) << appState.fpsCounter.displayFps;
             auto displayFps = "FPS: " + stream.str();
 
-            // auto timerStart = std::chrono::high_resolution_clock::now();
-
             RenderFreeTypeText(
                 &gDebugFTFont,
-                displayDelta,
+                displayCurrent,
                 1350.0f,
                 1160.0f,
                 1.0f,
@@ -401,7 +397,7 @@ namespace Application
 
             RenderFreeTypeText(
                 &gDebugFTFont,
-                displayCurrent,
+                displayDelta,
                 1350.0f,
                 1130.0f,
                 1.0f,
@@ -414,16 +410,6 @@ namespace Application
                 1100.0f,
                 1.0f,
                 glm::vec3(0.8, 0.8f, 0.8f));
-
-            /*
-            auto timerEnd = std::chrono::high_resolution_clock::now();
-
-            std::chrono::duration<double> elapsedMs = timerEnd - timerStart;
-
-            auto ms = elapsedMs.count() * 1000;
-
-            std::cout << "Draw text: " << ms << "ms\n";
-            */
 
             Window::SwapScreenBuffer(window);
 

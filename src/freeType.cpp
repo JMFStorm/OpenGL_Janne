@@ -74,10 +74,6 @@ void LoadFreeTypeFont(const char* fontPath, FreeTypeFont* font)
 
         auto newChar = std::pair<char, FreeTypeCharacter>(c, character);
         characterArr.insert(newChar);
-
-        std::cout
-            << "Loaded unsigned char: '" << c
-            << "', Current chars: " << characterArr.size() << "\n";
     }
 
     FT_Done_Face(ftFace);
@@ -174,8 +170,6 @@ void RenderFreeTypeText(
         // Now advance cursors for next glyph (note that advance is number of 1/64 pixels)
         screenX += (character.advance >> 6) * scale; // bitshift by 6 to get value in pixels (2^6 = 64)
     }
-
-    std::cout << "Draw calls: " << drawCalls << "\n";
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     VertexArray::Unbind();
