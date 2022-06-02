@@ -10,9 +10,6 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-#include <ft2build.h>
-#include FT_FREETYPE_H
-
 #include <chrono>
 #include <fstream>
 #include <iostream>
@@ -25,168 +22,13 @@
 
 #pragma warning(pop)
 
+#include "freeType.hpp"
+#include "jUtil.hpp"
+#include "shader.hpp"
+#include "vertexArray.hpp"
+
 #define WINDOW_WIDTH_DEFAULT 1600
 #define WINDOW_HEIGHT_DEFAULT 1200
-
-namespace Shader
-{
-    unsigned int Create(const std::string& vertexFilePath, const std::string& fragmentFilePath);
-    void Use(unsigned int shaderId);
-}
-
-void JAssert(bool assertion, std::string errorMessage)
-{
-    if (assertion == false)
-    {
-        std::string text = errorMessage;
-        std::cout << text << std::endl;
-        abort();
-    }
-}
-
-struct FreeTypeCharacter {
-    unsigned int textureId;  // ID handle of the glyph texture
-    glm::ivec2   size;       // Size of glyph
-    glm::ivec2   bearing;    // Offset from baseline to left/top of glyph
-    unsigned int advance;    // Offset to advance to next glyph
-};
-
-struct FreeTypeFont {
-    std::map<GLchar, FreeTypeCharacter> characters;
-    int shader;
-    int vao;
-    int vbo;
-} gDebugFTFont;
-
-void LoadFreeTypeFont(const char* fontPath, FreeTypeFont* font)
-{
-    FT_Library ft;
-    FT_Face face;
-    FT_Error result;
-    std::map<char, FreeTypeCharacter> characterArr;
-
-    result = FT_Init_FreeType(&ft);
-    JAssert(result == 0, "ERROR::FREETYPE: Could not init FreeType Library");
-
-    result = FT_New_Face(ft, fontPath, 0, &face);
-    JAssert(result == 0, "ERROR::FREETYPE: Failed to load font");
-
-    FT_Set_Pixel_Sizes(face, 0, 24);
-
-    // disable byte-alignment restriction
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-    for (unsigned char c = 32; c < 128; c++)
-    {
-        // Load character glyph 
-        result = FT_Load_Char(face, c, FT_LOAD_RENDER);
-
-        if (result != 0)
-        {
-            std::cout << "ERROR::FREETYTPE: Failed to load Glyph from unsigned char: " << c << std::endl;
-            continue;
-        }
-
-        // Generate texture
-        unsigned int texture;
-        glGenTextures(1, &texture);
-        glBindTexture(GL_TEXTURE_2D, texture);
-        glTexImage2D(
-            GL_TEXTURE_2D,
-            0,
-            GL_RED,
-            face->glyph->bitmap.width,
-            face->glyph->bitmap.rows,
-            0,
-            GL_RED,
-            GL_UNSIGNED_BYTE,
-            face->glyph->bitmap.buffer
-        );
-
-        // Set texture options
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-        // Now store character for later use
-        FreeTypeCharacter character = {
-            texture,
-            glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
-            glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
-            face->glyph->advance.x
-        };
-
-        auto newChar = std::pair<char, FreeTypeCharacter>(c, character);
-        characterArr.insert(newChar);
-
-        /*
-        std::cout 
-            << "Loaded unsigned char: '" << c
-            << "', Current chars: " << characterArr.size() << "\n";
-            */
-    }
-
-    FT_Done_Face(face);
-    FT_Done_FreeType(ft);
-
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    unsigned int textVAO, textVBO;
-    glGenVertexArrays(1, &textVAO);
-    glGenBuffers(1, &textVBO);
-    glBindVertexArray(textVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, textVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
-
-    unsigned int textShader = Shader::Create(
-        "./shaders/font_vertex_shader.shader",
-        "./shaders/font_fragment_shader.shader");
-
-    glm::mat4 projection = glm::ortho(
-        0.0f,
-        (float)WINDOW_WIDTH_DEFAULT,
-        0.0f,
-        (float)WINDOW_HEIGHT_DEFAULT);
-
-    Shader::Use(textShader);
-    glUniformMatrix4fv(glGetUniformLocation(textShader, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-
-    font->shader = textShader;
-    font->vao = textVAO;
-    font->vbo = textVBO;
-    font->characters = characterArr;
-}
-
-std::string ReadFileToString(std::string filePath)
-{
-    std::stringstream sStream;
-    std::ifstream source;
-    std::string result;
-
-    // Ensure ifstream objects can throw exceptions:
-    source.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-
-    try
-    {
-        source.open(filePath);
-        sStream << source.rdbuf();
-        source.close();
-
-        result = sStream.str();
-    }
-    catch (std::ifstream::failure& e)
-    {
-        printf("File read failed: %s\n", e.what());
-    }
-
-    return result;
-}
 
 unsigned char* LoadImage(const char* filePath, int* width, int* height, int* nrChannels)
 {
@@ -197,84 +39,6 @@ unsigned char* LoadImage(const char* filePath, int* width, int* height, int* nrC
 void FreeImageData(unsigned char* data)
 {
     stbi_image_free(data);
-}
-
-enum class ShaderDataType
-{
-    Float,
-    Float2,
-    Float3,
-    Float4,
-    Mat3,
-    Mat4,
-    Int,
-    Int2,
-    Int3,
-    Int4,
-    Bool
-};
-
-GLenum ShaderDataTypeToOpenGLBaseType(ShaderDataType type)
-{
-    switch (type)
-    {
-        case ShaderDataType::Float:    return GL_FLOAT;
-        case ShaderDataType::Float2:   return GL_FLOAT;
-        case ShaderDataType::Float3:   return GL_FLOAT;
-        case ShaderDataType::Float4:   return GL_FLOAT;
-        case ShaderDataType::Mat3:     return GL_FLOAT;
-        case ShaderDataType::Mat4:     return GL_FLOAT;
-        case ShaderDataType::Int:      return GL_INT;
-        case ShaderDataType::Int2:     return GL_INT;
-        case ShaderDataType::Int3:     return GL_INT;
-        case ShaderDataType::Int4:     return GL_INT;
-        case ShaderDataType::Bool:     return GL_BOOL;
-    }
-
-    return 0;
-}
-
-namespace VertexArray
-{
-    unsigned int Create()
-    {
-        unsigned int vertexArrayObject;
-
-        glGenVertexArrays(1, &vertexArrayObject);
-
-        return vertexArrayObject;
-    }
-
-    void Bind(unsigned int vertexArrayObject)
-    {
-        glBindVertexArray(vertexArrayObject);
-    }
-
-    void Unbind()
-    {
-        glBindVertexArray(0);
-    }
-
-    void SetVertexAttributePointer(
-        unsigned int attributeIndex,
-        int componentsSize,
-        ShaderDataType type,
-        bool normalize,
-        int strideByteSize,
-        void* offset)
-    {
-        unsigned int glType = ShaderDataTypeToOpenGLBaseType(type);
-        int setNormalize = normalize ? GL_TRUE : GL_FALSE;
-
-        glEnableVertexAttribArray(attributeIndex);
-        glVertexAttribPointer(
-            attributeIndex,
-            componentsSize,
-            glType,
-            setNormalize,
-            strideByteSize,
-            offset);
-    }
 }
 
 namespace VertexBuffer
@@ -326,140 +90,6 @@ namespace IndexBuffer
         }
 
         return indexBufferObject;
-    }
-}
-
-namespace Shader
-{
-    unsigned int Create(const std::string& vertexFilePath, const std::string& fragmentFilePath)
-    {
-        int success;
-        char infoLog[512];
-
-        // Get shader source strings
-        std::string vertexSourceString = ReadFileToString(vertexFilePath);
-        std::string fragmentSourceString = ReadFileToString(fragmentFilePath);
-
-        const char* vertexSource = vertexSourceString.c_str();
-        const char* fragmentSource = fragmentSourceString.c_str();
-
-        // Create vertex shader
-        unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-        glShaderSource(vertexShader, 1, &vertexSource, NULL);
-        glCompileShader(vertexShader);
-
-        glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-
-        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-
-        if (!success)
-        {
-            glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-            printf("Vertex shader compilation failed: %s\n", infoLog);
-        }
-
-        // Create fragment shader
-        unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-        glShaderSource(fragmentShader, 1, &fragmentSource, NULL);
-        glCompileShader(fragmentShader);
-
-        glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-
-        glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-
-        if (!success)
-        {
-            glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-            printf("Fragment shader compilation failed: %s\n", infoLog);
-        }
-
-        // Create new shader program
-        unsigned int shaderProgram = glCreateProgram();
-        glAttachShader(shaderProgram, vertexShader);
-        glAttachShader(shaderProgram, fragmentShader);
-        glLinkProgram(shaderProgram);
-
-        glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-
-        if (!success)
-        {
-            glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-            printf("Program linking failed: %s\n", infoLog);
-        }
-
-        // Cleanup
-        glDeleteShader(vertexShader);
-        glDeleteShader(fragmentShader);
-
-        return shaderProgram;
-    }
-
-    void Use(unsigned int shaderId)
-    {
-        glUseProgram(shaderId);
-    }
-
-    unsigned int GetUniform(int shaderId, const std::string& name)
-    {
-        return glGetUniformLocation(shaderId, name.c_str());
-    }
-
-    void SetBool(int shaderId, const std::string& name, const bool value)
-    {
-        glUniform1i(glGetUniformLocation(shaderId, name.c_str()), (int)value);
-    }
-
-    void SetInt(int shaderId, const std::string& name, const int value)
-    {
-        glUniform1i(glGetUniformLocation(shaderId, name.c_str()), value);
-    }
-
-    void SetFloat(int shaderId, const std::string& name, const float value)
-    {
-        glUniform1f(glGetUniformLocation(shaderId, name.c_str()), value);
-    }
-
-    void SetVec2(int shaderId, const std::string& name, const glm::vec2& value)
-    {
-        glUniform2fv(glGetUniformLocation(shaderId, name.c_str()), 1, &value[0]);
-    }
-    void SetVec2(int shaderId, const std::string& name, const float x, const float y)
-    {
-        glUniform2f(glGetUniformLocation(shaderId, name.c_str()), x, y);
-    }
-
-    void SetVec3(int shaderId, const std::string& name, const glm::vec3& value)
-    {
-        glUniform3fv(glGetUniformLocation(shaderId, name.c_str()), 1, &value[0]);
-    }
-
-    void SetVec3(int shaderId, const std::string& name, float x, float y, float z)
-    {
-        glUniform3f(glGetUniformLocation(shaderId, name.c_str()), x, y, z);
-    }
-
-    void SetVec4(int shaderId, const std::string& name, const glm::vec4& value)
-    {
-        glUniform4fv(glGetUniformLocation(shaderId, name.c_str()), 1, &value[0]);
-    }
-    void SetVec4(int shaderId, const std::string& name, float x, float y, float z, float w)
-    {
-        glUniform4f(glGetUniformLocation(shaderId, name.c_str()), x, y, z, w);
-    }
-
-    void SetMat2(int shaderId, const std::string& name, const glm::mat2& mat)
-    {
-        glUniformMatrix2fv(glGetUniformLocation(shaderId, name.c_str()), 1, GL_FALSE, &mat[0][0]);
-    }
-
-    void SetMat3(int shaderId, const std::string& name, const glm::mat3& mat)
-    {
-        glUniformMatrix3fv(glGetUniformLocation(shaderId, name.c_str()), 1, GL_FALSE, &mat[0][0]);
-    }
-
-    void SetMat4(int shaderId, const std::string& name, const glm::mat4& mat)
-    {
-        glUniformMatrix4fv(glGetUniformLocation(shaderId, name.c_str()), 1, GL_FALSE, &mat[0][0]);
     }
 }
 
@@ -603,66 +233,6 @@ namespace Window
     }
 }
 
-void RenderFreeTypeText(
-    FreeTypeFont* font,
-    std::string text,
-    float screenX,
-    float screenY,
-    float scale,
-    glm::vec3 color)
-{
-    // Activate corresponding render state	
-    Shader::Use(font->shader);
-    Shader::SetVec3(font->shader, "textColor", color.x, color.y, color.z);
-    glActiveTexture(GL_TEXTURE0);
-    VertexArray::Bind(font->vao);
-
-    // Iterate through all characters
-    std::string::const_iterator current;
-    FreeTypeCharacter character;
-
-    float xpos, ypos, cWidth, cHeight;
-    const int indicies = 6;
-
-    for (current = text.begin(); current != text.end(); current++)
-    {
-        character = font->characters[*current];
-
-        xpos = screenX + character.bearing.x * scale;
-        ypos = screenY - (character.size.y - character.bearing.y) * scale;
-
-        cWidth = character.size.x * scale;
-        cHeight = character.size.y * scale;
-
-        float vertices[indicies * 4] = {
-            xpos,           ypos + cHeight,   0.0f, 0.0f,
-            xpos,           ypos,             0.0f, 1.0f,
-            xpos + cWidth,  ypos,             1.0f, 1.0f,
-
-            xpos,           ypos + cHeight,   0.0f, 0.0f,
-            xpos + cWidth,  ypos,             1.0f, 1.0f,
-            xpos + cWidth,  ypos + cHeight,   1.0f, 0.0f
-        };
-
-        // Render glyph texture over quad
-        glBindTexture(GL_TEXTURE_2D, character.textureId);
-
-        // Update content of VBO memory
-        glBindBuffer(GL_ARRAY_BUFFER, font->vbo);
-        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
-
-        // Render quad
-        glDrawArrays(GL_TRIANGLES, 0, indicies);
-
-        // Now advance cursors for next glyph (note that advance is number of 1/64 pixels)
-        screenX += (character.advance >> 6) * scale; // bitshift by 6 to get value in pixels (2^6 = 64)
-    }
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    VertexArray::Unbind();
-    glBindTexture(GL_TEXTURE_2D, 0);
-}
-
 struct FpsCounter
 {
     unsigned long frames;
@@ -678,6 +248,8 @@ struct ApplicationState
 {
     FpsCounter fpsCounter;
 };
+
+FreeTypeFont gDebugFTFont;
 
 namespace Application
 {
@@ -718,7 +290,7 @@ namespace Application
         appState.fpsCounter.deltaTime = 0.0f;
         appState.fpsCounter.frames = 0;
         appState.fpsCounter.displayFps = 0;
-        appState.fpsCounter.previousCurrentTime = 1.0f; // Start init from one second
+        appState.fpsCounter.previousCurrentTime = 0.0f; // Start init from one second
         appState.fpsCounter.overflowedFpsCalcTime = 0.0f;
 
         int result;
@@ -817,6 +389,8 @@ namespace Application
             stream << std::fixed << std::setprecision(1) << appState.fpsCounter.displayFps;
             auto displayFps = "FPS: " + stream.str();
 
+            // auto timerStart = std::chrono::high_resolution_clock::now();
+
             RenderFreeTypeText(
                 &gDebugFTFont,
                 displayDelta,
@@ -824,7 +398,7 @@ namespace Application
                 1160.0f,
                 1.0f,
                 glm::vec3(0.8, 0.8f, 0.8f));
-            
+
             RenderFreeTypeText(
                 &gDebugFTFont,
                 displayCurrent,
@@ -840,6 +414,16 @@ namespace Application
                 1100.0f,
                 1.0f,
                 glm::vec3(0.8, 0.8f, 0.8f));
+
+            /*
+            auto timerEnd = std::chrono::high_resolution_clock::now();
+
+            std::chrono::duration<double> elapsedMs = timerEnd - timerStart;
+
+            auto ms = elapsedMs.count() * 1000;
+
+            std::cout << "Draw text: " << ms << "ms\n";
+            */
 
             Window::SwapScreenBuffer(window);
 
