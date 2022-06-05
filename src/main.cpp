@@ -240,8 +240,8 @@ struct FpsCounter
     float previousCurrentTime;
     float currentTime;
     float lastFpsCalcTime;
-    float overflowedFpsCalcTime;
     float deltaTime;
+    float overflowedFpsCalcTime;
 };
 
 struct ApplicationState
@@ -266,7 +266,7 @@ namespace Application
     void CalculateFpsScuffed(FpsCounter* fpsCounter)
     {
         const float second = 1.0f;
-        const float secondsElapsedFromPrevious = (fpsCounter->currentTime + fpsCounter->overflowedFpsCalcTime) 
+        const float secondsElapsedFromPrevious = (fpsCounter->currentTime + fpsCounter->overflowedFpsCalcTime)
             - fpsCounter->previousCurrentTime;
 
         if (second < secondsElapsedFromPrevious)
@@ -280,16 +280,8 @@ namespace Application
 
     int Run()
     {
-        FreeTypeFont gDebugFTFont;
-        ApplicationState appState;
-
-        appState.fpsCounter.currentTime = 0.0f;
-        appState.fpsCounter.lastFpsCalcTime = 0.0f;
-        appState.fpsCounter.deltaTime = 0.0f;
-        appState.fpsCounter.frames = 0;
-        appState.fpsCounter.displayFps = 0;
-        appState.fpsCounter.previousCurrentTime = 0.0f; // Start init from one second
-        appState.fpsCounter.overflowedFpsCalcTime = 0.0f;
+        FreeTypeFont gDebugFTFont = {};
+        ApplicationState appState = {};
 
         int result;
 
