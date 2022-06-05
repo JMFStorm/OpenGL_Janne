@@ -280,7 +280,7 @@ namespace Application
 
     int Run()
     {
-        FreeTypeFont gDebugFTFont = {};
+        FreeType::Font gDebugFTFont = {};
         ApplicationState appState = {};
 
         int result;
@@ -300,7 +300,7 @@ namespace Application
         printf("Maximum nr of vertex attributes supported: %d\n", result);
 
         // Load text fonts for debug
-        LoadFreeTypeFont("fonts/Roboto-Regular.ttf", &gDebugFTFont);
+        FreeType::LoadFont("fonts/Roboto-Regular.ttf", &gDebugFTFont);
 
         // Load texture1
         unsigned int texture1 = Texture::Create("./images/container.jpg", false);
@@ -325,8 +325,8 @@ namespace Application
         unsigned int VertexBufferObject = VertexBuffer::Create(vertices);
         unsigned int ElementBufferObject = IndexBuffer::Create(indices);
 
-        int vertexAttributeStride = 5 * sizeof(float);
-        int secondAttribOffset = 3;
+        const int vertexAttributeStride = 5 * sizeof(float);
+        const int secondAttribOffset = 3;
 
         VertexArray::SetVertexAttributePointer(
             0,
@@ -379,7 +379,7 @@ namespace Application
             stream << std::fixed << std::setprecision(1) << appState.fpsCounter.displayFps;
             auto displayFps = "FPS: " + stream.str();
 
-            RenderFreeTypeText(
+            FreeType::RenderText(
                 &gDebugFTFont,
                 displayCurrent,
                 1350.0f,
@@ -387,7 +387,7 @@ namespace Application
                 1.0f,
                 glm::vec3(0.8, 0.8f, 0.8f));
 
-            RenderFreeTypeText(
+            FreeType::RenderText(
                 &gDebugFTFont,
                 displayDelta,
                 1350.0f,
@@ -395,7 +395,7 @@ namespace Application
                 1.0f,
                 glm::vec3(0.8, 0.8f, 0.8f));
 
-            RenderFreeTypeText(
+            FreeType::RenderText(
                 &gDebugFTFont,
                 displayFps,
                 1350.0f,
