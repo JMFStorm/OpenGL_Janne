@@ -6,12 +6,10 @@
 
 #include <iostream>
 
+#include "main.hpp"
 #include "jUtil.hpp"
 #include "shader.hpp"
 #include "vertexArray.hpp"
-
-#define WINDOW_WIDTH_DEFAULT 1600
-#define WINDOW_HEIGHT_DEFAULT 1200
 
 namespace FreeType 
 {
@@ -106,7 +104,8 @@ namespace FreeType
             (float)WINDOW_HEIGHT_DEFAULT);
 
         Shader::Use(textShader);
-        glUniformMatrix4fv(glGetUniformLocation(textShader, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+        Shader::SetMat4(textShader, "projection", projection);
+        Shader::Use(0);
 
         font->shader = textShader;
         font->vao = textVAO;

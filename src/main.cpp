@@ -22,13 +22,11 @@
 
 #pragma warning(pop)
 
+#include "main.hpp"
 #include "freeType.hpp"
 #include "jUtil.hpp"
 #include "shader.hpp"
 #include "vertexArray.hpp"
-
-#define WINDOW_WIDTH_DEFAULT 1600
-#define WINDOW_HEIGHT_DEFAULT 1200
 
 unsigned char* LoadImage(const char* filePath, int* width, int* height, int* nrChannels)
 {
@@ -237,11 +235,11 @@ struct FpsCounter
 {
     unsigned long frames;
     unsigned int displayFps;
-    double previousCurrentTime;
-    double currentTime;
-    double lastFpsCalcTime;
-    double deltaTime;
-    double overflowedFpsCalcTime;
+    float previousCurrentTime;
+    float currentTime;
+    float lastFpsCalcTime;
+    float deltaTime;
+    float overflowedFpsCalcTime;
 };
 
 struct ApplicationState
@@ -350,10 +348,10 @@ namespace Application
             "./shaders/default_vertex_shader.shader",
             "./shaders/default_fragment_shader.shader");
 
-        glm::mat4 trans = glm::mat4(1.0f);
+        // glm::mat4 trans = glm::mat4(1.0f);
 
         Shader::Use(shader1);
-        Shader::SetMat4(shader1, "transform", trans);
+        // Shader::SetMat4(shader1, "transform", trans);
         Shader::SetInt(shader1, "texture1", 0);
         Shader::Use(0);
 
@@ -367,9 +365,13 @@ namespace Application
             Shader::Use(shader1);
 
             //
-            float scaleAmount = static_cast<float>(sin(glfwGetTime()));
+            glm::mat4 trans = glm::mat4(1.0f);
+            double time = glfwGetTime();
+
+            float rotateScale = (float)time * 40;
+
             trans = glm::translate(trans, glm::vec3(0.0f, 0.0f, 0.0f));
-            trans = glm::rotate(trans, glm::radians(0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+            trans = glm::rotate(trans, glm::radians(rotateScale * -4), glm::vec3(0.0f, 0.0f, 1.0f));
             trans = glm::scale(trans, glm::vec3(1.0f, 1.0f, 1.0f));
             Shader::SetMat4(shader1, "transform", trans);
             //
@@ -382,8 +384,8 @@ namespace Application
             Shader::Use(0);
 
             std::stringstream stream;
-            stream << std::fixed << std::setprecision(2) << scaleAmount;
-            auto displayDebug1 = "Scale amount: : " + stream.str();
+            stream << std::fixed << std::setprecision(3) << rotateScale;
+            auto displayDebug1 = "rotateScale: " + stream.str();
 
             stream.str("");
             stream << std::fixed << std::setprecision(1) << appState.fpsCounter.currentTime;
