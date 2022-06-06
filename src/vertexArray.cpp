@@ -30,7 +30,7 @@ namespace VertexArray
         void* offset)
     {
         unsigned int glType = ShaderDataTypeToOpenGLBaseType(type);
-        int setNormalize = normalize ? GL_TRUE : GL_FALSE;
+        GLboolean setNormalize = normalize ? GL_TRUE : GL_FALSE;
 
         glEnableVertexAttribArray(attributeIndex);
         glVertexAttribPointer(

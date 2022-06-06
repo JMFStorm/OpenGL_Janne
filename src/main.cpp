@@ -50,7 +50,7 @@ namespace VertexBuffer
         glGenBuffers(1, &vertexBufferObject);
         glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
 
-        int sizeInBytes = vertices.size() * sizeof(unsigned int);
+        int sizeInBytes = (int)vertices.size() * sizeof(unsigned int);
 
         glBufferData(GL_ARRAY_BUFFER, sizeInBytes, &vertices[0], GL_STATIC_DRAW);
 
@@ -76,7 +76,7 @@ namespace IndexBuffer
         glGenBuffers(1, &indexBufferObject);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferObject);
 
-        int sizeInBytes = indices.size() * sizeof(unsigned int);
+        int sizeInBytes = (int)indices.size() * sizeof(unsigned int);
 
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeInBytes, &indices[0], GL_STATIC_DRAW);
 
@@ -95,7 +95,7 @@ namespace IndexBuffer
 
 namespace Texture
 {
-    unsigned int Create(const std::string& filePath, bool isRGBA)
+    unsigned int Create(const std::string& filePath, const bool isRGBA)
     {
         JAssert(filePath.empty() == false, "FilePath missing, cannot intit texture ");
 
@@ -133,7 +133,7 @@ namespace Texture
 
 namespace Window
 {
-    void ClearScreenBuffer(float red, float green, float blue, float alpha)
+    void ClearScreenBuffer(const float red, const float green, const float blue, const float alpha)
     {
         glClearColor(red, green, blue, alpha);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -162,7 +162,7 @@ namespace Window
         glViewport(0, 0, width, height);
     }
 
-    GLFWwindow* Create(bool fullscreen)
+    GLFWwindow* Create(const bool fullscreen)
     {
         GLFWmonitor* monitor = glfwGetPrimaryMonitor();
         const GLFWvidmode* mode = glfwGetVideoMode(monitor);
@@ -237,11 +237,11 @@ struct FpsCounter
 {
     unsigned long frames;
     unsigned int displayFps;
-    float previousCurrentTime;
-    float currentTime;
-    float lastFpsCalcTime;
-    float deltaTime;
-    float overflowedFpsCalcTime;
+    double previousCurrentTime;
+    double currentTime;
+    double lastFpsCalcTime;
+    double deltaTime;
+    double overflowedFpsCalcTime;
 };
 
 struct ApplicationState
@@ -251,7 +251,7 @@ struct ApplicationState
 
 namespace Application
 {
-    void IncrementFrames(FpsCounter* fpsCounter, unsigned int frames)
+    void IncrementFrames(FpsCounter* fpsCounter, const unsigned int frames)
     {
         fpsCounter->frames += frames;
 
@@ -265,8 +265,8 @@ namespace Application
 
     void CalculateFpsScuffed(FpsCounter* fpsCounter)
     {
-        const float second = 1.0f;
-        const float secondsElapsedFromPrevious = (fpsCounter->currentTime + fpsCounter->overflowedFpsCalcTime)
+        const double second = 1.0f;
+        const double secondsElapsedFromPrevious = (fpsCounter->currentTime + fpsCounter->overflowedFpsCalcTime)
             - fpsCounter->previousCurrentTime;
 
         if (second < secondsElapsedFromPrevious)
@@ -303,7 +303,7 @@ namespace Application
         FreeType::LoadFont("fonts/Roboto-Regular.ttf", &gDebugFTFont);
 
         // Load texture1
-        unsigned int texture1 = Texture::Create("./images/container.jpg", false);
+        unsigned int texture1 = Texture::Create("./images/awesomeface.png", true);
 
         std::vector<unsigned int> indices{
             0, 1, 2, // first triangle
@@ -350,26 +350,40 @@ namespace Application
             "./shaders/default_vertex_shader.shader",
             "./shaders/default_fragment_shader.shader");
 
+        glm::mat4 trans = glm::mat4(1.0f);
+
+        Shader::Use(shader1);
+        Shader::SetMat4(shader1, "transform", trans);
         Shader::SetInt(shader1, "texture1", 0);
+        Shader::Use(0);
+
 
         while (!Window::ShouldClose(window))
         {
             Window::HandleInputEvents(window);
-
             Window::ClearScreenBuffer(0.2f, 0.3f, 0.3f, 1.0f);
 
             Texture::Bind(texture1);
             Shader::Use(shader1);
 
+            //
+            float scaleAmount = static_cast<float>(sin(glfwGetTime()));
+            trans = glm::translate(trans, glm::vec3(0.0f, 0.0f, 0.0f));
+            trans = glm::rotate(trans, glm::radians(0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+            trans = glm::scale(trans, glm::vec3(1.0f, 1.0f, 1.0f));
+            Shader::SetMat4(shader1, "transform", trans);
+            //
+
             glActiveTexture(GL_TEXTURE0);
             VertexArray::Bind(vertexArrayObject);
 
-            int elementsCount = indices.size();
+            int elementsCount = (int)indices.size();
             glDrawElements(GL_TRIANGLES, elementsCount, GL_UNSIGNED_INT, 0);
+            Shader::Use(0);
 
             std::stringstream stream;
-            stream << std::fixed << std::setprecision(2) << appState.fpsCounter.deltaTime * 1000;
-            auto displayDelta = "Delta: " + stream.str() + "ms";
+            stream << std::fixed << std::setprecision(2) << scaleAmount;
+            auto displayDebug1 = "Scale amount: : " + stream.str();
 
             stream.str("");
             stream << std::fixed << std::setprecision(1) << appState.fpsCounter.currentTime;
@@ -381,17 +395,9 @@ namespace Application
 
             FreeType::RenderText(
                 &gDebugFTFont,
-                displayCurrent,
-                1350.0f,
+                displayDebug1,
+                30.0f,
                 1160.0f,
-                1.0f,
-                glm::vec3(0.8, 0.8f, 0.8f));
-
-            FreeType::RenderText(
-                &gDebugFTFont,
-                displayDelta,
-                1350.0f,
-                1130.0f,
                 1.0f,
                 glm::vec3(0.8, 0.8f, 0.8f));
 
@@ -399,7 +405,15 @@ namespace Application
                 &gDebugFTFont,
                 displayFps,
                 1350.0f,
-                1100.0f,
+                1160.0f,
+                1.0f,
+                glm::vec3(0.8, 0.8f, 0.8f));
+
+            FreeType::RenderText(
+                &gDebugFTFont,
+                displayCurrent,
+                1350.0f,
+                1130.0f,
                 1.0f,
                 glm::vec3(0.8, 0.8f, 0.8f));
 
