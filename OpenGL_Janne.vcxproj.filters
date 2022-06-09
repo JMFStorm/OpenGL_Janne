@@ -39,6 +39,12 @@
     <ClCompile Include="src\vertexArray.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\image.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\window.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\stb_image.h">
@@ -1221,6 +1227,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\main.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\image.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\window.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

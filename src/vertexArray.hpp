@@ -4,19 +4,17 @@
 
 #include "shader.hpp"
 
-namespace VertexArray
-{
-    unsigned int Create();
 
-    void Bind(unsigned int vertexArrayObject);
+unsigned int CreateVertexArray();
 
-    void Unbind();
+void BindVertexArray(unsigned int vertexArrayObject);
 
-    void SetVertexAttributePointer(
-        unsigned int attributeIndex,
-        int componentsSize,
-        ShaderDataType type,
-        bool normalize,
-        int strideByteSize,
-        void* offset);
-}
+void UnbindVertexArray();
+
+void SetVertexAttributePointer(
+    unsigned int attributeIndex,
+    int componentsSize,
+    ShaderDataType type,
+    bool normalize,
+    int strideByteSize,
+    void* offset);

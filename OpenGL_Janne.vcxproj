@@ -163,11 +163,13 @@
     <ClCompile Include="src\freeType.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="include\glm\detail\glm.cpp" />
+    <ClCompile Include="src\image.cpp" />
     <ClCompile Include="src\jUtil.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\readFile.cpp" />
     <ClCompile Include="src\shader.cpp" />
     <ClCompile Include="src\vertexArray.cpp" />
+    <ClCompile Include="src\window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\dlg\dlg.h" />
@@ -558,12 +560,14 @@
     <ClInclude Include="include\glm\vector_relational.hpp" />
     <ClInclude Include="include\KHR\khrplatform.h" />
     <ClInclude Include="src\freeType.hpp" />
+    <ClInclude Include="src\image.hpp" />
     <ClInclude Include="src\jUtil.hpp" />
     <ClInclude Include="src\main.hpp" />
     <ClInclude Include="src\readFile.hpp" />
     <ClInclude Include="src\shader.hpp" />
     <ClInclude Include="src\stb_image.h" />
     <ClInclude Include="src\vertexArray.hpp" />
+    <ClInclude Include="src\window.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore" />
